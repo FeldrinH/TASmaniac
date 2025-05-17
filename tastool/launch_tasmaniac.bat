@@ -1,0 +1,1 @@
+Ambidextro.exe --script "tasmaniac/bootstrap.gd"
