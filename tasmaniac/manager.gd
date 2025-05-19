@@ -141,8 +141,9 @@ func on_level_load():
 		inputs = contents.split("\n", false)
 		inputs_i = 0
 		
-		# TODO: Without this delay the first input gets lost. Why, and can we do something to reduce the delay?
-		frame = -10
+		# This delay is necessary, because the game refuses to take inputs for the first idle frame after a new level is loaded
+		# (the first idle frame is frame -1, because frame -2 is the frame during which loading happens).
+		frame = -2
 		
 		print("[TASmaniac] Loaded " + filename + " for playback")
 		show_notification("Loaded " + filename + " for playback")
@@ -156,7 +157,7 @@ func on_level_complete():
 			alert("Failed to create recordings folder: " + error_string(error))
 			return
 		
-		# TODO: Detect conflicting filenames and add sequence number
+		# TODO: Detect conflicting filenames and add sequence number?
 		var duration := float(frame) / default_tps
 		var filename := "recordings/lvl%s_%05.2f.txt" % [level_loader.get_level_number_string(), duration]
 		var file := FileAccess.open(filename, FileAccess.WRITE)

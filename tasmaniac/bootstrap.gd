@@ -7,6 +7,15 @@ var _manager_scene: PackedScene
 func _initialize():
 	print("[TASmaniac] Bootstrapping TASmaniac " + _VERSION)
 	
+	# This helps prevent situations where input handling misbehaves 
+	# because some frames are skipped during minor lag spikes, especially at the start of levels.
+	# TODO: This is kind of unfair, because a player using an unmodified game
+	# could not apply inputs during a lag spike, even with perfect timing,
+	# and avoiding these lag spikes seems impossible, even with a good computer.
+	# It would be good to either obtain proof that the lag spikes can be avoided in some way
+	# or remove this and increase the delay before first input.
+	Engine.max_physics_steps_per_frame = 1
+	
 	_manager_scene = load("res://tasmaniac/manager.tscn")
 	_assert(_manager_scene != null, "Failed to load tasmaniac/manager.tscn. Make sure that you have copied the entire tasmaniac folder to your install location.")
 	
