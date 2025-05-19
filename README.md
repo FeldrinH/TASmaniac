@@ -19,7 +19,7 @@ TASmaniac has the following features:
 * Record inputs while playing a level and save them to a text file.
 * Play back the text file to reprodue the exact same sequence of inputs.
 * Slow down time to make tricky moves easier to execute.
-* Show a timer that indicates active time spent in the level. The timer starts with first input.
+* Show a timer that indicates active time spent in the level. The timer starts on first input.
 
 TASmaniac is operated from a small menu that appears in the top left corner of the game:
 ![image](https://github.com/user-attachments/assets/de3022c4-6711-493e-a78f-77ff525c1396)
