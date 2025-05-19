@@ -175,6 +175,8 @@ func on_level_unload():
 	level_loaded = false
 	frame = FRAME_STOP
 	
+	input_files_list_level = ""
+	
 	var selected := input_file_input.selected
 	input_file_input.clear()
 	input_file_input.add_item("Record new...")
