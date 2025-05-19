@@ -17,7 +17,7 @@ var level_loader: Node
 var global: Node
 
 var level_loaded := false
-var frame := -1
+var frame := FRAME_STOP
 
 var recording := false
 var playback := true
@@ -78,7 +78,8 @@ func on_level_load():
 		inputs = contents.split("\n", false)
 		inputs_i = 0
 		
-		frame = -60
+		# TODO: Without this delay the first input gets lost. Why, and can we do something to reduce the delay?
+		frame = -10
 		
 		print("[TASmaniac] Loaded " + filename + " for playback")
 
