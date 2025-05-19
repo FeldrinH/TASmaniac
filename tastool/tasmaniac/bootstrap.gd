@@ -21,9 +21,6 @@ func _initialize():
 	result = ProjectSettings.load_resource_pack("user://_patch.pck")
 	_assert(result, "Loading _patch.pck failed")
 	
-	print("SOURCE CODE")
-	print(load("res://scenes/main/level_loader.gd").source_code)
-	
 	root.child_entered_tree.connect(_on_scene_load)
 	change_scene_to_file(ProjectSettings.get_setting("application/run/main_scene"))
 
@@ -35,8 +32,10 @@ func _on_scene_load(scene: Node):
 		var manager := _manager_scene.instantiate()
 		manager.init(level_loader, global)
 		scene.add_child(manager)
+		scene.move_child(manager, 0)
 
 func _assert(condition: bool, message: String):
 	if !condition:
+		push_error("[TASmaniac] ERROR: " + message)
 		OS.alert(message, "TASmaniac runtime error")
-		OS.crash("TASmaniac runtime error: " + message)
+		OS.crash("Assertion failed, exiting...")
