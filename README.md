@@ -17,7 +17,7 @@ You now have a working installation of TASmaniac. Double-click `launch_tasmaniac
 TASmaniac has the following features:
 
 * Record inputs while playing a level and save them to a text file.
-* Play back the text file to reprodue the exact same sequence of inputs.
+* Play back the text file to reproduce the exact same sequence of inputs.
 * Slow down time to make tricky moves easier to execute.
 * Show a timer that indicates active time spent in the level. The timer starts on first input.
 
@@ -30,4 +30,4 @@ The input file dropdown allows you to either record a new sequence of inputs or 
 To record or play back a sequence of inputs simply select the action from the dropdown and launch a level. The recording/playback will start automatically.
 
 All recordings are saved in a `recordings` folder inside your TASmaniac install folder and are named based on the level and completion time.
-A recording is saved only if you succesfully complete a level.
+A recording is saved only if you successfully complete a level.
