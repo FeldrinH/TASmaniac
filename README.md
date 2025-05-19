@@ -10,7 +10,7 @@ This is a tool for creating tool assisted speedruns for the game Ambidextro. You
    The final contents of the folder should look like this:  
 ![image](https://github.com/user-attachments/assets/6f1d954f-8478-480b-97c5-b65454e1286e)
 
-You now have a working installation of TASmaniac. Double-click `launch_tasmaniac.bat` to launch it.
+You now have a working installation of TASmaniac. Double-click `launch_tasmaniac.bat` (Windows) or `launch_tasmaniac.sh` (Linux) to launch it.
 
 ## Usage
 
