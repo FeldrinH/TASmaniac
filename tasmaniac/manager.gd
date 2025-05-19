@@ -50,11 +50,6 @@ func _ready():
 	time_scale_input.value_changed.connect(update_time_scale)
 	notification_label_timer.timeout.connect(func(): notification_label.visible = false)
 
-func _input(event: InputEvent):
-	if event is InputEventKey and event.is_pressed() and not event.is_echo() \
-			and event.physical_keycode == KEY_R and event.is_command_or_control_pressed():
-		settings_container.visible = not settings_container.visible
-
 func update_time_scale(value: float):
 	var tps := roundi(default_tps * value)
 	var time_scale := float(tps) / default_tps
