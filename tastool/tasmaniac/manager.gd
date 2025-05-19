@@ -1,4 +1,4 @@
-extends Control
+extends Node
 
 const FRAME_STOP := -1024
 
@@ -11,6 +11,15 @@ const ACTIONS := {
 	"R": &"right_r",
 }
 
+var input_files_list_level := ""
+
+@onready var settings_container: Container = $SettingsContainer
+@onready var time_scale_input: Range = $SettingsContainer/TimeScaleInput
+@onready var input_file_input: OptionButton = $SettingsContainer/InputFileInput
+@onready var timer_label: Label = $TimerLabel
+@onready var notification_label: Label = $NotificationLabel
+@onready var notification_label_timer: Timer = $NotificationLabel/Timer
+
 var default_tps := Engine.physics_ticks_per_second
 
 var level_loader: Node
@@ -20,8 +29,9 @@ var level_loaded := false
 var frame := FRAME_STOP
 
 var recording := false
-var playback := true
+var playback := false
 
+var input_file: String = ""
 var inputs: PackedStringArray = []
 var inputs_i := 0
 
@@ -36,10 +46,63 @@ func init(level_loader: Node, global: Node):
 	level_loader._level_complete.connect(on_level_complete)
 
 func _ready():
-	visible = false
+	time_scale_input.value_changed.connect(update_time_scale)
+	notification_label_timer.timeout.connect(func(): notification_label.visible = false)
 
+func _input(event: InputEvent):
+	if event is InputEventKey and event.is_pressed() and not event.is_echo() \
+			and event.physical_keycode == KEY_R and event.is_command_or_control_pressed():
+		settings_container.visible = not settings_container.visible
+
+func update_time_scale(value: float):
+	var tps := roundi(default_tps * value)
+	var time_scale := float(tps) / default_tps
+	Engine.physics_ticks_per_second = tps
+	Engine.time_scale = time_scale
+	time_scale_input.set_value_no_signal(time_scale)
+
+func update_input_file(index: int):
+	if index == -1:
+		input_file = ""
+	elif index == 0:
+		input_file = ""
+		recording = true
+		playback = false
+	else:
+		input_file = input_file_input.get_item_text(index)
+		recording = false
+		playback = true
+
+func show_notification(text: String):
+	notification_label.text = text
+	notification_label.visible = true
+	notification_label_timer.stop()
+	notification_label_timer.start()
+
+# TODO: This should be called even if the player has not moved, but currently it isn't
 func on_level_load():
 	level_loaded = true
+	
+	if level_loader.get_level_number_string() != input_files_list_level:
+		input_files_list_level = level_loader.get_level_number_string()
+		
+		var selected := input_file_input.selected
+		input_file_input.clear()
+		input_file_input.add_item("Record new...")
+		
+		var dir := DirAccess.open("user://")
+		if DirAccess.get_open_error() == OK:
+			var prefix := "lvl%s" % input_files_list_level
+			var file_names := dir.get_files()
+			for file in file_names:
+				if file.begins_with(prefix) and file.ends_with(".txt"):
+					input_file_input.add_item(file)
+		elif DirAccess.get_open_error() != ERR_FILE_NOT_FOUND:
+			alert("Failed to read list of recordings from folder user://: " + error_string(DirAccess.get_open_error()))
+		
+		input_file_input.select(min(selected, input_file_input.item_count - 1, 1))
+	
+	update_input_file(input_file_input.selected)
 	
 	#if input_log_level and input_log:
 		#var filename := "user://lvl%s_%s.txt" % [input_log_level, Time.get_datetime_string_from_system().replace(":", ".")]
@@ -65,8 +128,7 @@ func on_level_load():
 		for key in ACTIONS:
 			Input.action_release(ACTIONS[key])
 		
-		#  TODO: Add UI to select file
-		var filename := "user://lvl%s.txt" % level_loader.get_level_number_string()
+		var filename := "user://" + input_file
 		var file := FileAccess.open(filename, FileAccess.READ)
 		if FileAccess.get_open_error() != OK:
 			alert("Failed to read recording from file " + filename + ": " + error_string(FileAccess.get_open_error()))
@@ -82,6 +144,7 @@ func on_level_load():
 		frame = -10
 		
 		print("[TASmaniac] Loaded " + filename + " for playback")
+		show_notification("Loaded " + filename + " for playback")
 
 func on_level_complete():
 	level_loaded = false
@@ -89,8 +152,8 @@ func on_level_complete():
 	if recording:
 		var duration := float(frame) / default_tps
 		# TODO: Detect conflicting filenames and add sequence number
-		var filename := "user://lvl%s.txt" % level_loader.get_level_number_string()
-		#var filename := "user://lvl%s_%05.2f.txt" % [level_loader.get_level_number_string(), duration]
+		#var filename := "user://lvl%s.txt" % level_loader.get_level_number_string()
+		var filename := "user://lvl%s_%05.2f.txt" % [level_loader.get_level_number_string(), duration]
 		var file := FileAccess.open(filename, FileAccess.WRITE)
 		if FileAccess.get_open_error() != OK:
 			alert("Failed to write recording to file " + filename + ": " + error_string(FileAccess.get_open_error()))
@@ -100,8 +163,18 @@ func on_level_complete():
 			alert("Failed to write recording to file " + filename + ": " + error_string(file.get_error()))
 			return
 		print("[TASmaniac] Saved recording to file " + filename)
+		show_notification("Saved recording to file " + filename)
+
+# TODO: Implement some cleanup and hook this to the correct function
+func on_level_unload():
+	pass
 
 func _process(delta: float):
+	if frame == FRAME_STOP:
+		timer_label.text = ""
+	else:
+		timer_label.text = "%05.2f" % (float(frame) / default_tps)
+	
 	if not level_loaded:
 		return
 	

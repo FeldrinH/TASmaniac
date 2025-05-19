@@ -32,7 +32,6 @@ func _on_scene_load(scene: Node):
 		var manager := _manager_scene.instantiate()
 		manager.init(level_loader, global)
 		scene.add_child(manager)
-		scene.move_child(manager, 0)
 
 func _assert(condition: bool, message: String):
 	if !condition:

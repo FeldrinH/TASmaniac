@@ -2,11 +2,58 @@
 
 [ext_resource type="Script" path="res://tasmaniac/manager.gd" id="1_t0yln"]
 
-[node name="TASmaniacManager" type="Control"]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="TASmaniacManager" type="Node"]
+process_priority = -1
+process_physics_priority = -1
 script = ExtResource("1_t0yln")
+
+[node name="SettingsContainer" type="GridContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+columns = 2
+
+[node name="TimeScaleLabel" type="Label" parent="SettingsContainer"]
+layout_mode = 2
+text = "Time scale"
+
+[node name="TimeScaleInput" type="SpinBox" parent="SettingsContainer"]
+layout_mode = 2
+min_value = 0.1
+max_value = 1.0
+step = 0.001
+value = 1.0
+custom_arrow_step = 0.1
+
+[node name="InputFileLabel" type="Label" parent="SettingsContainer"]
+layout_mode = 2
+text = "Input file"
+
+[node name="InputFileInput" type="OptionButton" parent="SettingsContainer"]
+layout_mode = 2
+selected = 0
+item_count = 2
+popup/item_0/text = "Record new..."
+popup/item_1/text = "First matching recording"
+popup/item_1/id = 1
+
+[node name="TimerLabel" type="Label" parent="."]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -40.0
+offset_bottom = 23.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 32
+
+[node name="NotificationLabel" type="Label" parent="."]
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -92.0
+offset_top = 45.0
+offset_bottom = 68.0
+grow_horizontal = 0
+
+[node name="Timer" type="Timer" parent="NotificationLabel"]
+wait_time = 1.5
