@@ -18,6 +18,7 @@ TASmaniac has the following features:
 
 * Record inputs while playing a level and save them to a text file.
 * Play back the text file to reproduce the exact same sequence of inputs.
+* Disable randomization of quantum cubes. Quantum cubes always appear in their default locations.
 * Slow down time to make tricky moves easier to execute.
 * Show a timer that indicates active time spent in the level. The timer starts on first input.
 

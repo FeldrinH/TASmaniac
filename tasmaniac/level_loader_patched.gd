@@ -16,3 +16,6 @@ func next_level(instantly):
 func unload_level():
 	_level_unload.emit()
 	super.unload_level()
+
+func _reset_quantum_cubes():
+	pass
