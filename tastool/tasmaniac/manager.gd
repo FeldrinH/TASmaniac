@@ -90,15 +90,15 @@ func on_level_load():
 		input_file_input.clear()
 		input_file_input.add_item("Record new...")
 		
-		var dir := DirAccess.open("user://")
+		var dir := DirAccess.open("recordings")
 		if DirAccess.get_open_error() == OK:
 			var prefix := "lvl%s" % input_files_list_level
 			var file_names := dir.get_files()
 			for file in file_names:
 				if file.begins_with(prefix) and file.ends_with(".txt"):
 					input_file_input.add_item(file)
-		elif DirAccess.get_open_error() != ERR_FILE_NOT_FOUND:
-			alert("Failed to read list of recordings from folder user://: " + error_string(DirAccess.get_open_error()))
+		elif DirAccess.get_open_error() != ERR_INVALID_PARAMETER:
+			alert("Failed to read list of recordings from folder recordings: " + error_string(DirAccess.get_open_error()))
 		
 		input_file_input.select(min(selected, input_file_input.item_count - 1, 1))
 	
@@ -128,7 +128,7 @@ func on_level_load():
 		for key in ACTIONS:
 			Input.action_release(ACTIONS[key])
 		
-		var filename := "user://" + input_file
+		var filename := "recordings/" + input_file
 		var file := FileAccess.open(filename, FileAccess.READ)
 		if FileAccess.get_open_error() != OK:
 			alert("Failed to read recording from file " + filename + ": " + error_string(FileAccess.get_open_error()))
@@ -150,10 +150,14 @@ func on_level_complete():
 	level_loaded = false
 	
 	if recording:
-		var duration := float(frame) / default_tps
+		var error := DirAccess.make_dir_absolute("recordings")
+		if error != OK and error != ERR_ALREADY_EXISTS:
+			alert("Failed to create recordings folder: " + error_string(error))
+			return
+		
 		# TODO: Detect conflicting filenames and add sequence number
-		#var filename := "user://lvl%s.txt" % level_loader.get_level_number_string()
-		var filename := "user://lvl%s_%05.2f.txt" % [level_loader.get_level_number_string(), duration]
+		var duration := float(frame) / default_tps
+		var filename := "recordings/lvl%s_%05.2f.txt" % [level_loader.get_level_number_string(), duration]
 		var file := FileAccess.open(filename, FileAccess.WRITE)
 		if FileAccess.get_open_error() != OK:
 			alert("Failed to write recording to file " + filename + ": " + error_string(FileAccess.get_open_error()))
@@ -162,6 +166,7 @@ func on_level_complete():
 		if file.get_error() != OK:
 			alert("Failed to write recording to file " + filename + ": " + error_string(file.get_error()))
 			return
+		
 		print("[TASmaniac] Saved recording to file " + filename)
 		show_notification("Saved recording to file " + filename)
 

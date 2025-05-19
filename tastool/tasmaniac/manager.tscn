@@ -56,4 +56,4 @@ offset_bottom = 68.0
 grow_horizontal = 0
 
 [node name="Timer" type="Timer" parent="NotificationLabel"]
-wait_time = 1.5
+wait_time = 2.0
