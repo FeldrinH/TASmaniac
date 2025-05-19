@@ -44,6 +44,7 @@ func init(level_loader: Node, global: Node):
 	
 	level_loader._level_load.connect(on_level_load)
 	level_loader._level_complete.connect(on_level_complete)
+	level_loader._level_unload.connect(on_level_unload)
 
 func _ready():
 	time_scale_input.value_changed.connect(update_time_scale)
@@ -170,9 +171,15 @@ func on_level_complete():
 		print("[TASmaniac] Saved recording to file " + filename)
 		show_notification("Saved recording to file " + filename)
 
-# TODO: Implement some cleanup and hook this to the correct function
 func on_level_unload():
-	pass
+	level_loaded = false
+	frame = FRAME_STOP
+	
+	var selected := input_file_input.selected
+	input_file_input.clear()
+	input_file_input.add_item("Record new...")
+	input_file_input.add_item("First matching recording")
+	input_file_input.select(min(selected, 1))
 
 func _process(delta: float):
 	if frame == FRAME_STOP:

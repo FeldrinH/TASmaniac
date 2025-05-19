@@ -1,6 +1,6 @@
 project.godot
 .godot/
-recordings/lvl*_*.txt
+recordings/
 *.exe
 *.pck
 *.dll
