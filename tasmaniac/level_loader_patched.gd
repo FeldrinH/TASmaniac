@@ -19,3 +19,9 @@ func unload_level():
 
 func _reset_quantum_cubes():
 	pass
+
+func _manage_achievements():
+	pass
+
+func manage_beat_game_achievements():
+	pass
