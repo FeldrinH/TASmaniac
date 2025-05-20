@@ -26,6 +26,8 @@ var input_files_list_level := ""
 
 var default_tps := Engine.physics_ticks_per_second
 
+var recordings_folder: String
+
 var level_loader: Node
 var global: Node
 
@@ -42,7 +44,8 @@ var inputs_i := 0
 #var input_log_level: String
 #var input_log: PackedStringArray = []
 
-func init(level_loader: Node, global: Node):
+func init(recordings_folder: String, level_loader: Node, global: Node):
+	self.recordings_folder = recordings_folder
 	self.level_loader = level_loader
 	self.global = global
 	
@@ -84,7 +87,7 @@ func show_notification(text: String):
 	notification_label_timer.start()
 
 func save_recording(incomplete: bool):
-	var error := DirAccess.make_dir_absolute("recordings")
+	var error := DirAccess.make_dir_absolute(recordings_folder)
 	if error != OK and error != ERR_ALREADY_EXISTS:
 		alert("Failed to create recordings folder: " + error_string(error))
 		return
@@ -92,7 +95,7 @@ func save_recording(incomplete: bool):
 	# TODO: Detect conflicting filenames and add sequence number?
 	var level_number = level_loader.get_level_number_string()
 	var duration := float(frame) / default_tps
-	var filename := ("recordings/lvl%s_incomplete_%05.2f.txt" if incomplete else "recordings/lvl%s_%05.2f.txt") % [level_number, duration]
+	var filename := recordings_folder + ("/lvl%s_incomplete_%05.2f.txt" if incomplete else "/lvl%s_%05.2f.txt") % [level_number, duration]
 	
 	var file := FileAccess.open(filename, FileAccess.WRITE)
 	if FileAccess.get_open_error() != OK:
@@ -121,7 +124,7 @@ func on_level_load():
 		input_file_input.clear()
 		input_file_input.add_item("Record new...")
 		
-		var dir := DirAccess.open("recordings")
+		var dir := DirAccess.open(recordings_folder)
 		if DirAccess.get_open_error() == OK:
 			var prefix := "lvl%s" % input_files_list_level
 			var file_names := dir.get_files()
@@ -129,7 +132,7 @@ func on_level_load():
 				if file.begins_with(prefix) and file.ends_with(".txt"):
 					input_file_input.add_item(file)
 		elif DirAccess.get_open_error() != ERR_INVALID_PARAMETER:
-			alert("Failed to read list of recordings from folder recordings: " + error_string(DirAccess.get_open_error()))
+			alert("Failed to read list of recordings from recordings folder: " + error_string(DirAccess.get_open_error()))
 		
 		input_file_input.select(min(selected, input_file_input.item_count - 1, 1))
 	
@@ -159,7 +162,7 @@ func on_level_load():
 		for key in ACTIONS:
 			Input.action_release(ACTIONS[key])
 		
-		var filename := "recordings/" + input_file
+		var filename := recordings_folder + "/" + input_file
 		var file := FileAccess.open(filename, FileAccess.READ)
 		if FileAccess.get_open_error() != OK:
 			alert("Failed to read recording from file " + filename + ": " + error_string(FileAccess.get_open_error()))

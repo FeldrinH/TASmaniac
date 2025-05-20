@@ -1,1 +1,1 @@
-Ambidextro.exe --script "tasmaniac/bootstrap.gd"
+Ambidextro.exe --script "tasmaniac/bootstrap.gd" -- %*

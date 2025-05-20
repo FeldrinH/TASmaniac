@@ -1,11 +1,23 @@
 extends SceneTree
 
-const _VERSION = "v0.3.2"
+const _VERSION = "v0.3.3"
 
+var _recordings_folder: String
 var _manager_scene: PackedScene
 
-func _initialize():
+func _initialize():	
 	print("[TASmaniac] Bootstrapping TASmaniac " + _VERSION)
+	
+	var args := OS.get_cmdline_user_args()
+	if len(args) == 0:
+		_recordings_folder = "recordings"
+	if len(args) == 1:
+		_recordings_folder = args[0].replace("\\", "/")
+		while _recordings_folder.ends_with("/"):
+			_recordings_folder = _recordings_folder.trim_suffix("/")
+		print("[TASmaniac] Recordings folder set to " + _recordings_folder)
+	else:
+		_assert(false, "Expected 0 or 1 command line arguments, but got %s" % len(args))
 	
 	# This helps prevent situations where input handling misbehaves 
 	# because some frames are skipped during minor lag spikes, especially at the start of levels.
@@ -45,7 +57,7 @@ func _on_scene_load(scene: Node):
 		var global = root.get_node("Global")
 		
 		var manager := _manager_scene.instantiate()
-		manager.init(level_loader, global)
+		manager.init(_recordings_folder, level_loader, global)
 		scene.add_child(manager)
 
 func _assert(condition: bool, message: String):
