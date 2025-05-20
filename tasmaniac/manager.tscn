@@ -8,6 +8,7 @@ process_physics_priority = -1
 script = ExtResource("1_t0yln")
 
 [node name="SettingsContainer" type="GridContainer" parent="."]
+process_mode = 3
 offset_right = 40.0
 offset_bottom = 40.0
 columns = 2
