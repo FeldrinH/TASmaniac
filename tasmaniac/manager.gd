@@ -16,6 +16,7 @@ var input_files_list_level := ""
 @onready var settings_container: Container = $SettingsContainer
 @onready var time_scale_input: Range = $SettingsContainer/TimeScaleInput
 @onready var input_file_input: OptionButton = $SettingsContainer/InputFileInput
+@onready var save_recording_button: Button = $SettingsContainer/SaveRecordingButton
 @onready var timer_label: Label = $TimerLabel
 @onready var notification_label: Label = $NotificationLabel
 @onready var notification_label_timer: Timer = $NotificationLabel/Timer
@@ -51,6 +52,8 @@ func init(level_loader: Node, global: Node):
 
 func _ready():
 	time_scale_input.value_changed.connect(update_time_scale)
+	save_recording_button.pressed.connect(func(): if recording and level_loaded and inputs: save_recording(true))
+	
 	notification_label_timer.timeout.connect(func(): notification_label.visible = false)
 	
 	$VersionLabel.text = "v" + global.version + " / " + get_tree()._VERSION
@@ -79,6 +82,33 @@ func show_notification(text: String):
 	notification_label.visible = true
 	notification_label_timer.stop()
 	notification_label_timer.start()
+
+func save_recording(incomplete: bool):
+	var error := DirAccess.make_dir_absolute("recordings")
+	if error != OK and error != ERR_ALREADY_EXISTS:
+		alert("Failed to create recordings folder: " + error_string(error))
+		return
+	
+	# TODO: Detect conflicting filenames and add sequence number?
+	var level_number = level_loader.get_level_number_string()
+	var duration := float(frame) / default_tps
+	var filename := ("recordings/lvl%s_incomplete_%05.2f.txt" if incomplete else "recordings/lvl%s_%05.2f.txt") % [level_number, duration]
+	
+	var file := FileAccess.open(filename, FileAccess.WRITE)
+	if FileAccess.get_open_error() != OK:
+		alert("Failed to write recording to file " + filename + ": " + error_string(FileAccess.get_open_error()))
+		return FileAccess.get_open_error()
+	file.store_string("\n".join(inputs))
+	if file.get_error() != OK:
+		alert("Failed to write recording to file " + filename + ": " + error_string(file.get_error()))
+		return file.get_error()
+	
+	if incomplete:
+		print("[TASmaniac] Saved incomplete recording to file " + filename)
+		show_notification("Saved incomplete recording to file " + filename)
+	else:
+		print("[TASmaniac] Saved recording to file " + filename)
+		show_notification("Saved recording to file " + filename)
 
 # TODO: This should be called even if the player has not moved, but currently it isn't
 func on_level_load():
@@ -152,25 +182,7 @@ func on_level_complete():
 	level_loaded = false
 	
 	if recording:
-		var error := DirAccess.make_dir_absolute("recordings")
-		if error != OK and error != ERR_ALREADY_EXISTS:
-			alert("Failed to create recordings folder: " + error_string(error))
-			return
-		
-		# TODO: Detect conflicting filenames and add sequence number?
-		var duration := float(frame) / default_tps
-		var filename := "recordings/lvl%s_%05.2f.txt" % [level_loader.get_level_number_string(), duration]
-		var file := FileAccess.open(filename, FileAccess.WRITE)
-		if FileAccess.get_open_error() != OK:
-			alert("Failed to write recording to file " + filename + ": " + error_string(FileAccess.get_open_error()))
-			return
-		file.store_string("\n".join(inputs))
-		if file.get_error() != OK:
-			alert("Failed to write recording to file " + filename + ": " + error_string(file.get_error()))
-			return
-		
-		print("[TASmaniac] Saved recording to file " + filename)
-		show_notification("Saved recording to file " + filename)
+		save_recording(false)
 
 func on_level_unload():
 	level_loaded = false

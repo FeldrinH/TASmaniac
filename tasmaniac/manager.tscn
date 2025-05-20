@@ -1,6 +1,14 @@
-[gd_scene load_steps=2 format=3 uid="uid://d3p4ph2811rxu"]
+[gd_scene load_steps=4 format=3 uid="uid://d3p4ph2811rxu"]
 
 [ext_resource type="Script" path="res://tasmaniac/manager.gd" id="1_t0yln"]
+
+[sub_resource type="InputEventKey" id="InputEventKey_q0dra"]
+device = -1
+command_or_control_autoremap = true
+physical_keycode = 83
+
+[sub_resource type="Shortcut" id="Shortcut_4mtt3"]
+events = [SubResource("InputEventKey_q0dra")]
 
 [node name="TASmaniacManager" type="Node"]
 process_priority = -1
@@ -36,6 +44,14 @@ item_count = 2
 popup/item_0/text = "Record new..."
 popup/item_1/text = "First matching recording"
 popup/item_1/id = 1
+
+[node name="Padding" type="Control" parent="SettingsContainer"]
+layout_mode = 2
+
+[node name="SaveRecordingButton" type="Button" parent="SettingsContainer"]
+layout_mode = 2
+shortcut = SubResource("Shortcut_4mtt3")
+text = "Save incomplete recording"
 
 [node name="TimerLabel" type="Label" parent="."]
 anchors_preset = 1
