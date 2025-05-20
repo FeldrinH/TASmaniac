@@ -27,7 +27,7 @@ text = "Time scale"
 
 [node name="TimeScaleInput" type="SpinBox" parent="SettingsContainer"]
 layout_mode = 2
-min_value = 0.1
+min_value = 0.05
 max_value = 1.0
 step = 0.001
 value = 1.0
