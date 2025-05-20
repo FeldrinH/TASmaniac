@@ -1,0 +1,11 @@
+0 +A +R
+2 +W -W +U -U
+32 +W -W -A +D +U -U +L -R
+54 +W -W -D +U -U -L
+58 +A +R
+104 +W -W +U -U
+124 -A +D +L -R
+129 +A -D -L +R
+139 -A +D +L -R
+169 +W -W +U -U
+199 +W -W +U -U

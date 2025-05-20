@@ -1,0 +1,18 @@
+0 +D +L
+28 +W -W -D +U -U -L
+33 +A +R
+58 +W -W -A +U -U -R
+62 +D +L
+87 +W -W -D +U -U -L
+91 +A +R
+116 +W -W -A +U -U -R
+120 +D +L
+128 -D -L
+144 +W -W +A +U -U +R
+156 -A -R
+172 +W -W +D +U -U +L
+220 +W -W +U -U
+237 +A -D -L +R
+243 -A +D +L -R
+256 +A -D -L +R
+274 -A +D +L -R

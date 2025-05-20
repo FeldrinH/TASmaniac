@@ -40,3 +40,7 @@ To record or play back a sequence of inputs simply select the action from the dr
 
 All recordings are saved in a `recordings` folder inside your TASmaniac install folder and are named based on the level and completion time.
 A recording is saved only if you successfully complete a level.
+
+## Existing TAS run
+
+An incomplete set of input files for a work-in-progress TAS run can be found in the `best_recordings` folder.
