@@ -19,6 +19,9 @@ var input_files_list_level := ""
 @onready var timer_label: Label = $TimerLabel
 @onready var notification_label: Label = $NotificationLabel
 @onready var notification_label_timer: Timer = $NotificationLabel/Timer
+@onready var coyote_info: Container = $CoyoteInfo
+@onready var coyote_left_label: Label = $CoyoteInfo/Left
+@onready var coyote_right_label: Label = $CoyoteInfo/Right
 
 var default_tps := Engine.physics_ticks_per_second
 
@@ -186,6 +189,13 @@ func _process(delta: float):
 		timer_label.text = ""
 	else:
 		timer_label.text = "%05.2f" % (float(frame) / default_tps)
+	
+	if is_instance_valid(global.player_charas[0]):
+		coyote_info.visible = true
+		coyote_left_label.text = "%.3f" % global.player_charas[0].coyote_timer.time_left
+		coyote_right_label.text = "%.3f" % global.player_charas[1].coyote_timer.time_left
+	else:
+		coyote_info.visible = false
 	
 	if not level_loaded:
 		return
