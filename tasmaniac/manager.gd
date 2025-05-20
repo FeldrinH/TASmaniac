@@ -49,6 +49,8 @@ func init(level_loader: Node, global: Node):
 func _ready():
 	time_scale_input.value_changed.connect(update_time_scale)
 	notification_label_timer.timeout.connect(func(): notification_label.visible = false)
+	
+	$VersionLabel.text = "v" + global.version + " / " + get_tree()._VERSION
 
 func update_time_scale(value: float):
 	var tps := roundi(default_tps * value)
@@ -252,4 +254,4 @@ func _physics_process(delta: float):
 
 static func alert(message: String):
 	push_error("[TASmaniac] ERROR: " + message)
-	OS.alert(message, "TASmaniac runtime error")
+	OS.alert(message, "TASmaniac error")
