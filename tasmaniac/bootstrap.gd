@@ -11,7 +11,7 @@ func _initialize():
 	var args := OS.get_cmdline_user_args()
 	if len(args) == 0:
 		_recordings_folder = "recordings"
-	if len(args) == 1:
+	elif len(args) == 1:
 		_recordings_folder = args[0].replace("\\", "/")
 		while _recordings_folder.ends_with("/"):
 			_recordings_folder = _recordings_folder.trim_suffix("/")
