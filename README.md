@@ -43,4 +43,4 @@ A recording is saved only if you successfully complete a level.
 
 ## Existing TAS run
 
-An incomplete set of input files for a work-in-progress TAS run can be found in the `best_recordings` folder.
+An incomplete set of inputs for a work-in-progress TAS run can be found [here](https://docs.google.com/spreadsheets/d/1kA16tzJ-diouDjB213JCW4X9J4LKVxMMdmYSAMIR64Y/edit?gid=0#gid=0). If you want to contribute to it then contact me on the [Ambidextro Speedrunning Discord](https://discord.gg/q7cB2sSQZn).
