@@ -218,7 +218,7 @@ func _process(delta: float):
 			var input_name: StringName = ACTIONS[key]
 			if Input.is_action_just_pressed(input_name):
 				parts.append("+" + key)
-			if Input.is_action_just_released(input_name):
+			if Input.is_action_just_released(input_name) and (inputs or parts):
 				parts.append("-" + key)
 		if parts:
 			if frame == FRAME_STOP:
