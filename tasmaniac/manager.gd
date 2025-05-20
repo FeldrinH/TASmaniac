@@ -197,10 +197,10 @@ func on_level_unload():
 	input_file_input.select(min(selected, 1))
 
 func _process(delta: float):
-	if frame == FRAME_STOP:
-		timer_label.text = ""
+	if level_loaded or frame != FRAME_STOP:
+		timer_label.text = "%05.2f" % (0.0 if frame == FRAME_STOP else float(frame) / default_tps)
 	else:
-		timer_label.text = "%05.2f" % (float(frame) / default_tps)
+		timer_label.text = ""
 	
 	if is_instance_valid(global.player_charas[0]):
 		coyote_info.visible = true

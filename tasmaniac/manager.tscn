@@ -50,6 +50,7 @@ layout_mode = 2
 
 [node name="SaveRecordingButton" type="Button" parent="SettingsContainer"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 14
 shortcut = SubResource("Shortcut_4mtt3")
 text = "Save incomplete recording"
 
