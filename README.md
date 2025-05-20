@@ -12,6 +12,13 @@ This is a tool for creating tool assisted speedruns for the game Ambidextro. You
 
 You now have a working installation of TASmaniac. Double-click `launch_tasmaniac.bat` (Windows) or `launch_tasmaniac.sh` (Linux) to launch it.
 
+## Updating
+
+1. Download the latest version of TASmaniac from [here](https://github.com/FeldrinH/TASmaniac/archive/refs/heads/main.zip)
+2. Unpack the ZIP file to the folder with your existing TASmaniac install. If you get a prompt about replacing existing files then pick the option to replace all.
+
+You should now have an updated installation of TASmaniac. You can check the installed TASmaniac version by launching it and looking at the bottom right corner (the first version is Ambidextro version, second is TASmaniac version).
+
 ## Usage
 
 TASmaniac has the following features:
