@@ -1,0 +1,6 @@
+0 +L +D
+39 +U -U +W -W
+70 -L -D +R +A +W +U -W -U
+119 +W +U -W -U 
+135 -R -A +L +D +W +U -W -U
+180 +W +U -W -U
