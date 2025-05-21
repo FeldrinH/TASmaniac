@@ -201,7 +201,8 @@ func on_level_unload():
 
 func _process(delta: float):
 	if level_loaded or frame != FRAME_STOP:
-		timer_label.text = "%05.2f" % (0.0 if frame == FRAME_STOP else float(frame) / default_tps)
+		var timer_frame := 0 if frame == FRAME_STOP else frame
+		timer_label.text = "%05.2f / %d" % [float(timer_frame) / default_tps, timer_frame]
 	else:
 		timer_label.text = ""
 	
