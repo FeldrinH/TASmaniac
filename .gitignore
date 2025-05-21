@@ -1,7 +1,6 @@
 project.godot
 .godot/
-recordings/
+*.txt
 *.exe
 *.pck
 *.dll
-readme.txt
