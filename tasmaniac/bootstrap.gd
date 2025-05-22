@@ -1,6 +1,6 @@
 extends SceneTree
 
-const _VERSION = "v0.4.0"
+const _VERSION = "v0.4.1"
 
 var _recordings_folder: String
 var _manager_scene: PackedScene
@@ -55,10 +55,12 @@ func _on_scene_load(scene: Node):
 func _process(delta: float):
 	var target_delta_usec := roundi(delta * _delta_multiplier * 1_000_000)
 	var new_frame_usec := Time.get_ticks_usec()
-	var new_delay_usec := target_delta_usec - (new_frame_usec - _last_frame_usec - _last_delay_usec)
+	var new_delay_usec := maxi(0, target_delta_usec - (new_frame_usec - _last_frame_usec - _last_delay_usec))
 	_last_frame_usec = new_frame_usec
 	_last_delay_usec = new_delay_usec
-	OS.delay_usec(maxi(0, new_delay_usec))
+	if new_delay_usec < 0:
+		print(new_delay_usec)
+	OS.delay_usec(new_delay_usec)
 
 func _set_delta_multiplier(multiplier: float):
 	_delta_multiplier = multiplier
