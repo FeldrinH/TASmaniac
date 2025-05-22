@@ -126,7 +126,7 @@ func save_recording(incomplete: bool):
 		print("[TASmaniac] Saved recording to file " + filename)
 		show_notification("Saved recording to file " + filename)
 
-# TODO: This should be called even if the player has not moved, but currently it isn't
+# TODO: This should be called even if the player has not moved, but currently it isn't.
 func on_level_load():
 	level_loaded = true
 	
@@ -150,20 +150,6 @@ func on_level_load():
 		input_file_input.select(min(selected, input_file_input.item_count - 1, 1))
 	
 	update_input_file(input_file_input.selected)
-	
-	#if input_log_level and input_log:
-		#var filename := "user://lvl%s_%s.txt" % [input_log_level, Time.get_datetime_string_from_system().replace(":", ".")]
-		#var file := FileAccess.open(filename, FileAccess.WRITE)
-		#if FileAccess.get_open_error() != OK:
-			#alert("Failed to write input log to file " + filename + ": " + error_string(FileAccess.get_open_error()))
-			#return
-		#file.store_string("\n".join(input_log))
-		#if file.get_error() != OK:
-			#alert("Failed to write input log to file " + filename + ": " + error_string(file.get_error()))
-			#return
-		#print("[TASmaniac] Saved input log to file " + filename)
-	#input_log_level = level_loader.get_level_number_string()
-	#input_log.clear()
 	
 	if recording:
 		inputs = []
@@ -191,12 +177,12 @@ func on_level_load():
 			print("[TASmaniac] Loaded " + filename + " for playback")
 			show_notification("Loaded " + filename + " for playback")
 		
-		if autoload or inputs_i == 0:
+		# Only start the clock if we have freshly loaded inputs.
+		if inputs and inputs_i == 0:
 			# This delay is necessary, because the game refuses to take inputs for the first idle frame after a new level is loaded
 			# (the first idle frame is frame -1, because frame -2 is the frame during which loading happens).
 			frame = -2
 		else:
-			# Autoload is disabled and we have already sent any manually loaded inputs.
 			frame = FRAME_STOP
 
 func on_level_complete():
@@ -269,29 +255,10 @@ func _process(delta: float):
 					continue
 			
 			inputs_i += 1
-		
-		#var parts := PackedStringArray()
-		#for key in ACTIONS:
-			#var input_name: StringName = ACTIONS[key]
-			#if Input.is_action_just_pressed(input_name):
-				#parts.append("+" + key)
-			#if Input.is_action_just_released(input_name):
-				#parts.append("-" + key)
-		#if len(parts) > 0:
-			#print("DETECTED " + str(frame) + " " + " ".join(parts))
 
 func _physics_process(delta: float):
 	if not level_loaded:
 		return
-	
-	#var player_characters: Array[Node] = global.player_charas
-	#if player_characters[0]:
-		#var dir_l = player_characters[0]._direction
-		#var jump_l = !player_characters[0].jump_buffer_timer.is_stopped()
-		#var dir_r = player_characters[1]._direction
-		#var jump_r = !player_characters[1].jump_buffer_timer.is_stopped()
-		#if not input_log.is_empty() or dir_l != 0 or jump_l or dir_r != 0 or jump_r:
-			#input_log.append("%d %s %d %s" % [dir_l, jump_l, dir_r, jump_r])
 	
 	if frame != FRAME_STOP:
 		frame += 1
