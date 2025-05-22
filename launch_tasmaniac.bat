@@ -1,1 +1,1 @@
-Ambidextro.exe --script "tasmaniac/bootstrap.gd" --fixed-fps 120 -- %*
+Ambidextro.exe --script "tasmaniac/bootstrap.gd" --fixed-fps 120 --disable-vsync -- %*

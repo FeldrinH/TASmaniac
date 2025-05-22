@@ -24,12 +24,6 @@ func _initialize():
 	else:
 		_assert(false, "Expected 0 or 1 command line arguments, but got %s" % len(args))
 	
-	var refresh_rate := DisplayServer.screen_get_refresh_rate()
-	if refresh_rate != -1 and refresh_rate < 59.9:
-		OS.alert("You are playing on a monitor with a %.2f Hz refresh rate.\n" % refresh_rate 
-			+ "Playing at refresh rates lower than 60 Hz may cause weird inconsistencies. " 
-			+ "It is recommended that you increase the refresh rate of your monitor.", "TASmaniac warning")
-	
 	_manager_scene = load("res://tasmaniac/manager.tscn")
 	_assert(_manager_scene != null, "Failed to load tasmaniac/manager.tscn. Make sure that you have copied the entire tasmaniac folder to your install location.")
 	
