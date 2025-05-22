@@ -5,6 +5,9 @@ const _VERSION = "v0.3.4"
 var _recordings_folder: String
 var _manager_scene: PackedScene
 
+var last_frame_usec := 0
+var last_delay_usec := 0
+
 func _initialize():	
 	print("[TASmaniac] Bootstrapping TASmaniac " + _VERSION)
 	
@@ -18,15 +21,6 @@ func _initialize():
 		print("[TASmaniac] Recordings folder set to " + _recordings_folder)
 	else:
 		_assert(false, "Expected 0 or 1 command line arguments, but got %s" % len(args))
-	
-	# This helps prevent situations where input handling misbehaves 
-	# because some frames are skipped during minor lag spikes, especially at the start of levels.
-	# TODO: This is kind of unfair, because a player using an unmodified game
-	# could not apply inputs during a lag spike, even with perfect timing,
-	# and avoiding these lag spikes seems impossible, even with a good computer.
-	# It would be good to either obtain proof that the lag spikes can be avoided in some way
-	# or remove this and increase the delay before first input.
-	Engine.max_physics_steps_per_frame = 1
 	
 	var refresh_rate := DisplayServer.screen_get_refresh_rate()
 	if refresh_rate != -1 and refresh_rate < 59.9:
@@ -50,6 +44,14 @@ func _initialize():
 	
 	root.child_entered_tree.connect(_on_scene_load)
 	change_scene_to_file(ProjectSettings.get_setting("application/run/main_scene"))
+
+func _process(delta: float):
+	var target_delta_usec := roundi(delta * 1_000_000)
+	var new_frame_usec := Time.get_ticks_usec()
+	var new_delay_usec := target_delta_usec - (new_frame_usec - last_frame_usec - last_delay_usec)
+	last_frame_usec = new_frame_usec
+	last_delay_usec = new_delay_usec
+	OS.delay_usec(maxi(0, new_delay_usec))
 
 func _on_scene_load(scene: Node):
 	if scene.name == "MainScene":
