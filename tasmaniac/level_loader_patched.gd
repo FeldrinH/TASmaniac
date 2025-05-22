@@ -25,3 +25,7 @@ func _manage_achievements():
 
 func manage_beat_game_achievements():
 	pass
+
+func save_ending():
+	_level_complete.emit()
+	super.save_ending()
