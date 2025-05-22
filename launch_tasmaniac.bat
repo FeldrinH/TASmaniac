@@ -1,1 +1,1 @@
-Ambidextro.exe --script "tasmaniac/bootstrap.gd" --fixed-fps 60 -- %*
+Ambidextro.exe --script "tasmaniac/bootstrap.gd" --fixed-fps 120 -- %*
