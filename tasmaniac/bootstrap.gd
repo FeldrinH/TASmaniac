@@ -4,16 +4,24 @@ const _VERSION = "v0.4.1"
 
 var _recordings_folder: String
 var _manager_scene: PackedScene
+var _websocket_server_script: GDScript
 
 var _delta_multiplier := 1.0
 
 var _last_frame_usec := 0
 var _last_delay_usec := 0
 
-func _initialize():	
+func _initialize():
 	print("[TASmaniac] Bootstrapping TASmaniac " + _VERSION)
 	
-	var args := OS.get_cmdline_user_args()
+	var args := []
+	var flags := []
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--"):
+			flags.append(arg)
+		else:
+			args.append(arg)
+	
 	if len(args) == 0:
 		_recordings_folder = "recordings"
 	elif len(args) == 1:
@@ -26,6 +34,10 @@ func _initialize():
 	
 	_manager_scene = load("res://tasmaniac/manager.tscn")
 	_assert(_manager_scene != null, "Failed to load tasmaniac/manager.tscn. Make sure that you have copied the entire tasmaniac folder to your install location.")
+	
+	if "--server" in flags:
+		_websocket_server_script = load("res://tasmaniac/websocket_server.gd")
+		_assert(_websocket_server_script != null, "Failed to load tasmaniac/websocket_server.gd. Make sure that you have copied the entire tasmaniac folder to your install location.")
 	
 	var packer := PCKPacker.new()
 	var result = packer.pck_start("user://_patch.pck")
@@ -43,12 +55,17 @@ func _initialize():
 
 func _on_scene_load(scene: Node):
 	if scene.name == "MainScene":
-		var level_loader = scene.get_node("LevelLoader")
-		var global = root.get_node("Global")
+		var level_loader := scene.get_node("LevelLoader")
+		var menu_loader := scene.get_node("MenuLoader")
+		var global := root.get_node("Global")
 		
 		var manager := _manager_scene.instantiate()
-		manager.init(_recordings_folder, level_loader, global)
+		manager.init(_recordings_folder, level_loader, menu_loader, global)
 		scene.add_child(manager)
+		
+		if _websocket_server_script != null:
+			var websocket_server: Node = _websocket_server_script.new(7111, manager)
+			scene.add_child(websocket_server)
 
 # TODO: Process is in the middle of the game loop, so adding a delay here increases the input latency.
 # It would be good to add the delay somewhere else, but currently there seems to be no other suitable location.

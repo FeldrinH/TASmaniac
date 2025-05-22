@@ -29,6 +29,7 @@ var default_tps := Engine.physics_ticks_per_second
 var recordings_folder: String
 
 var level_loader: Node
+var menu_loader: Node
 var global: Node
 
 var level_loaded := false
@@ -36,6 +37,7 @@ var frame := FRAME_STOP
 
 var recording := false
 var playback := false
+var autoload := true
 
 var input_file: String = ""
 var inputs: PackedStringArray = []
@@ -44,16 +46,17 @@ var inputs_i := 0
 #var input_log_level: String
 #var input_log: PackedStringArray = []
 
-func init(recordings_folder: String, level_loader: Node, global: Node):
+func init(recordings_folder: String, level_loader: Node, menu_loader: Node, global: Node):
 	self.recordings_folder = recordings_folder
 	self.level_loader = level_loader
+	self.menu_loader = menu_loader
 	self.global = global
-	
+
+func _ready():
 	level_loader._level_load.connect(on_level_load)
 	level_loader._level_complete.connect(on_level_complete)
 	level_loader._level_unload.connect(on_level_unload)
-
-func _ready():
+	
 	time_scale_input.value_changed.connect(update_time_scale)
 	save_recording_button.pressed.connect(func(): if recording and level_loaded and inputs: save_recording(true))
 	
@@ -71,16 +74,30 @@ func update_input_file(index: int):
 		input_file = ""
 		recording = true
 		playback = false
+		autoload = true
 	else:
 		input_file = input_file_input.get_item_text(index)
 		recording = false
 		playback = true
+		autoload = true
 
 func show_notification(text: String):
 	notification_label.text = text
 	notification_label.visible = true
 	notification_label_timer.stop()
 	notification_label_timer.start()
+
+func start_manual_playback(level: int, level_inputs: PackedStringArray):
+	input_file_input.select(-1)
+	recording = false
+	playback = true
+	autoload = false
+	
+	inputs = level_inputs
+	inputs_i = 0
+	
+	level_loader.unload_level()
+	menu_loader.manage_load_level(level, 1, 0, 0)
 
 func save_recording(incomplete: bool):
 	var error := DirAccess.make_dir_absolute(recordings_folder)
@@ -113,7 +130,7 @@ func save_recording(incomplete: bool):
 func on_level_load():
 	level_loaded = true
 	
-	if level_loader.get_level_number_string() != input_files_list_level:
+	if autoload and level_loader.get_level_number_string() != input_files_list_level:
 		input_files_list_level = level_loader.get_level_number_string()
 		
 		var selected := input_file_input.selected
@@ -158,24 +175,29 @@ func on_level_load():
 		for key in ACTIONS:
 			Input.action_release(ACTIONS[key])
 		
-		var filename := recordings_folder + "/" + input_file
-		var file := FileAccess.open(filename, FileAccess.READ)
-		if FileAccess.get_open_error() != OK:
-			alert("Failed to read recording from file " + filename + ": " + error_string(FileAccess.get_open_error()))
-			return
-		var contents := file.get_as_text(true)
-		if file.get_error() != OK:
-			alert("Failed to read recording from file " + filename + ": " + error_string(file.get_error()))
-			return
-		inputs = contents.split("\n", false)
-		inputs_i = 0
+		if autoload:
+			var filename := recordings_folder + "/" + input_file
+			var file := FileAccess.open(filename, FileAccess.READ)
+			if FileAccess.get_open_error() != OK:
+				alert("Failed to read recording from file " + filename + ": " + error_string(FileAccess.get_open_error()))
+				return
+			var contents := file.get_as_text(true)
+			if file.get_error() != OK:
+				alert("Failed to read recording from file " + filename + ": " + error_string(file.get_error()))
+				return
+			inputs = contents.split("\n", false)
+			inputs_i = 0
+			
+			print("[TASmaniac] Loaded " + filename + " for playback")
+			show_notification("Loaded " + filename + " for playback")
 		
-		# This delay is necessary, because the game refuses to take inputs for the first idle frame after a new level is loaded
-		# (the first idle frame is frame -1, because frame -2 is the frame during which loading happens).
-		frame = -2
-		
-		print("[TASmaniac] Loaded " + filename + " for playback")
-		show_notification("Loaded " + filename + " for playback")
+		if autoload or inputs_i == 0:
+			# This delay is necessary, because the game refuses to take inputs for the first idle frame after a new level is loaded
+			# (the first idle frame is frame -1, because frame -2 is the frame during which loading happens).
+			frame = -2
+		else:
+			# Autoload is disabled and we have already sent any manually loaded inputs.
+			frame = FRAME_STOP
 
 func on_level_complete():
 	level_loaded = false
