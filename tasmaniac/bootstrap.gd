@@ -58,7 +58,10 @@ func _process(delta: float):
 	var new_delay_usec := maxi(0, target_delta_usec - (new_frame_usec - _last_frame_usec - _last_delay_usec))
 	_last_frame_usec = new_frame_usec
 	_last_delay_usec = new_delay_usec
-	OS.delay_usec(new_delay_usec)
+	# 2000 us is the shortest possible sleep time with delay_usec on Windows.
+	# For shorter delays we accumulate sleep over multiple frames.
+	if new_delay_usec >= 2000:
+		OS.delay_usec(new_delay_usec)
 
 func _set_delta_multiplier(multiplier: float):
 	_delta_multiplier = multiplier
