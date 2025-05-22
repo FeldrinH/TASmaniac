@@ -1,6 +1,6 @@
 extends SceneTree
 
-const _VERSION = "v0.4.0-fixed-timestep-test"
+const _VERSION = "v0.4.1-fixed-timestep-test"
 
 var _recordings_folder: String
 var _manager_scene: PackedScene
