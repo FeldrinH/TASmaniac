@@ -62,11 +62,7 @@ func _ready():
 	$VersionLabel.text = "v" + global.version + " / " + get_tree()._VERSION
 
 func update_time_scale(value: float):
-	var tps := roundi(default_tps * value)
-	var time_scale := float(tps) / default_tps
-	Engine.physics_ticks_per_second = tps
-	Engine.time_scale = time_scale
-	time_scale_input.set_value_no_signal(time_scale)
+	get_tree()._set_delta_multiplier(1.0 / value)
 
 func update_input_file(index: int):
 	if index == -1:

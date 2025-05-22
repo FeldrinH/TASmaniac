@@ -5,8 +5,10 @@ const _VERSION = "v0.4.0-fixed-timestep-test"
 var _recordings_folder: String
 var _manager_scene: PackedScene
 
-var last_frame_usec := 0
-var last_delay_usec := 0
+var _delta_multiplier := 1.0
+
+var _last_frame_usec := 0
+var _last_delay_usec := 0
 
 func _initialize():	
 	print("[TASmaniac] Bootstrapping TASmaniac " + _VERSION)
@@ -45,14 +47,6 @@ func _initialize():
 	root.child_entered_tree.connect(_on_scene_load)
 	change_scene_to_file(ProjectSettings.get_setting("application/run/main_scene"))
 
-func _process(delta: float):
-	var target_delta_usec := roundi(delta * 1_000_000)
-	var new_frame_usec := Time.get_ticks_usec()
-	var new_delay_usec := target_delta_usec - (new_frame_usec - last_frame_usec - last_delay_usec)
-	last_frame_usec = new_frame_usec
-	last_delay_usec = new_delay_usec
-	OS.delay_usec(maxi(0, new_delay_usec))
-
 func _on_scene_load(scene: Node):
 	if scene.name == "MainScene":
 		var level_loader = scene.get_node("LevelLoader")
@@ -61,6 +55,19 @@ func _on_scene_load(scene: Node):
 		var manager := _manager_scene.instantiate()
 		manager.init(_recordings_folder, level_loader, global)
 		scene.add_child(manager)
+
+# TODO: Process is in the middle of the game loop, so adding a delay here increases the input latency.
+# It would be good to add the delay somewhere else, but currently there seems to be no other suitable location.
+func _process(delta: float):
+	var target_delta_usec := roundi(delta * _delta_multiplier * 1_000_000)
+	var new_frame_usec := Time.get_ticks_usec()
+	var new_delay_usec := target_delta_usec - (new_frame_usec - _last_frame_usec - _last_delay_usec)
+	_last_frame_usec = new_frame_usec
+	_last_delay_usec = new_delay_usec
+	OS.delay_usec(maxi(0, new_delay_usec))
+
+func _set_delta_multiplier(multiplier: float):
+	_delta_multiplier = multiplier
 
 func _assert(condition: bool, message: String):
 	if !condition:
