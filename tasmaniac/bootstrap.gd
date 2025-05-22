@@ -5,6 +5,11 @@ const _VERSION = "v0.3.5"
 var _recordings_folder: String
 var _manager_scene: PackedScene
 
+var _delta_multiplier := 1.0
+
+var _last_frame_usec := 0
+var _last_delay_usec := 0
+
 func _initialize():	
 	print("[TASmaniac] Bootstrapping TASmaniac " + _VERSION)
 	
@@ -18,21 +23,6 @@ func _initialize():
 		print("[TASmaniac] Recordings folder set to " + _recordings_folder)
 	else:
 		_assert(false, "Expected 0 or 1 command line arguments, but got %s" % len(args))
-	
-	# This helps prevent situations where input handling misbehaves 
-	# because some frames are skipped during minor lag spikes, especially at the start of levels.
-	# TODO: This is kind of unfair, because a player using an unmodified game
-	# could not apply inputs during a lag spike, even with perfect timing,
-	# and avoiding these lag spikes seems impossible, even with a good computer.
-	# It would be good to either obtain proof that the lag spikes can be avoided in some way
-	# or remove this and increase the delay before first input.
-	Engine.max_physics_steps_per_frame = 1
-	
-	var refresh_rate := DisplayServer.screen_get_refresh_rate()
-	if refresh_rate != -1 and refresh_rate < 59.9:
-		OS.alert("You are playing on a monitor with a %.2f Hz refresh rate.\n" % refresh_rate 
-			+ "Playing at refresh rates lower than 60 Hz may cause weird inconsistencies. " 
-			+ "It is recommended that you increase the refresh rate of your monitor.", "TASmaniac warning")
 	
 	_manager_scene = load("res://tasmaniac/manager.tscn")
 	_assert(_manager_scene != null, "Failed to load tasmaniac/manager.tscn. Make sure that you have copied the entire tasmaniac folder to your install location.")
@@ -59,6 +49,19 @@ func _on_scene_load(scene: Node):
 		var manager := _manager_scene.instantiate()
 		manager.init(_recordings_folder, level_loader, global)
 		scene.add_child(manager)
+
+# TODO: Process is in the middle of the game loop, so adding a delay here increases the input latency.
+# It would be good to add the delay somewhere else, but currently there seems to be no other suitable location.
+func _process(delta: float):
+	var target_delta_usec := roundi(delta * _delta_multiplier * 1_000_000)
+	var new_frame_usec := Time.get_ticks_usec()
+	var new_delay_usec := target_delta_usec - (new_frame_usec - _last_frame_usec - _last_delay_usec)
+	_last_frame_usec = new_frame_usec
+	_last_delay_usec = new_delay_usec
+	OS.delay_usec(maxi(0, new_delay_usec))
+
+func _set_delta_multiplier(multiplier: float):
+	_delta_multiplier = multiplier
 
 func _assert(condition: bool, message: String):
 	if !condition:
