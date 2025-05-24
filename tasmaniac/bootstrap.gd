@@ -1,6 +1,6 @@
 extends SceneTree
 
-const _VERSION = "v0.5.0"
+const _VERSION = "v0.6.0"
 
 var _recordings_folder: String
 var _manager_scene: PackedScene
