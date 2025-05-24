@@ -11,12 +11,13 @@ const ACTIONS := {
 	"R": &"right_r",
 }
 
-var input_files_list_level := ""
+const collision_drawer_script := preload("res://tasmaniac/collision_drawer.gd")
 
 @onready var settings_container: Container = $SettingsContainer
 @onready var time_scale_input: Range = $SettingsContainer/TimeScaleInput
 @onready var input_file_input: OptionButton = $SettingsContainer/InputFileInput
 @onready var save_recording_button: Button = $SettingsContainer/SaveRecordingButton
+@onready var collision_shapes_toggle: Button = $SettingsContainer/CollisionShapesToggle
 @onready var timer_label: Label = $TimerLabel
 @onready var notification_label: Label = $NotificationLabel
 @onready var notification_label_timer: Timer = $NotificationLabel/Timer
@@ -31,6 +32,8 @@ var recordings_folder: String
 var level_loader: Node
 var menu_loader: Node
 var global: Node
+
+var input_files_list_level := ""
 
 var level_loaded := false
 var frame := FRAME_STOP
@@ -59,6 +62,7 @@ func _ready():
 	
 	time_scale_input.value_changed.connect(update_time_scale)
 	save_recording_button.pressed.connect(func(): if recording and level_loaded and inputs: save_recording(true))
+	collision_shapes_toggle.toggled.connect(update_draw_collision_shapes)
 	
 	notification_label_timer.timeout.connect(func(): notification_label.visible = false)
 	
@@ -80,6 +84,38 @@ func update_input_file(index: int):
 		recording = false
 		playback = true
 		autoload = true
+
+func update_draw_collision_shapes(enabled: bool):
+	var level_instance: Node = level_loader.current_level_instance
+	if !is_instance_valid(level_instance):
+		return
+	
+	if enabled:
+		for collision_shape in level_instance.find_children("*", "CollisionShape2D", true, false):
+			var parent := collision_shape.get_parent()
+			if parent is not CollisionObject2D:
+				continue
+			
+			var color: Color
+			if parent.get_collision_layer_value(2):
+				color = Color.RED # Damage
+			elif parent.name == &"DamageArea":
+				color = Color.GREEN # Player damage
+			elif parent.name == &"PlayerChara":
+				color = Color.CYAN # Player collision
+			else:
+				continue
+			color.a = 0.5
+			
+			collision_shape.add_child(collision_drawer_script.new(color))
+		
+		for tile_map in level_instance.find_children("*", "TileMapLayer"):
+			var color := Color.RED
+			color.a = 0.5
+			tile_map.add_child(collision_drawer_script.new(color))
+	else:
+		for collision_drawer in get_tree().get_nodes_in_group("_collision_drawers"):
+			collision_drawer.queue_free()
 
 func show_notification(text: String):
 	notification_label.text = text
@@ -129,6 +165,9 @@ func save_recording(incomplete: bool):
 # TODO: This should be called even if the player has not moved, but currently it isn't.
 func on_level_load():
 	level_loaded = true
+	
+	if collision_shapes_toggle.button_pressed:
+		(func(): update_draw_collision_shapes(collision_shapes_toggle.button_pressed)).call_deferred()
 	
 	if autoload and level_loader.get_level_number_string() != input_files_list_level:
 		input_files_list_level = level_loader.get_level_number_string()
