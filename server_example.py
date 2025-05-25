@@ -6,13 +6,14 @@ from websockets.sync.connection import Connection
 # Before running this script start the TASmaniac WebSocket server by running launch_tasmaniac_server.bat.
 # Required libraries: `pip install websockets`.
 
-def play_level(websocket: Connection, level: int, inputs: list[str]) -> tuple[bool, int]:
+def play_level(websocket: Connection, level: int, inputs: list[str], start_positions: list[tuple[float, float]] | None = None) -> tuple[bool, int]:
     """
-    Play a level with the given inputs and return a result indicating
-    if the level was completed successfully and how many ticks it took to finish.
+    Play a level with the given inputs and return a result indicating if the level was completed successfully and how many ticks it took to finish.
+
+    If start_positions is given then the players will be teleported to the given positions at the start of the level.
     """
 
-    websocket.send(json.dumps({'command': 'play_level', 'level': level, 'inputs': inputs}))
+    websocket.send(json.dumps({'command': 'play_level', 'level': level, 'inputs': inputs, 'start_positions': start_positions}))
     response = json.loads(websocket.recv(decode=True))
 
     if response['status'] != 'executed':
