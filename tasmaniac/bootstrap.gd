@@ -66,6 +66,8 @@ func _on_scene_load(scene: Node):
 		if _websocket_server_script != null:
 			var websocket_server: Node = _websocket_server_script.new(7111, manager)
 			scene.add_child(websocket_server)
+		
+		root.child_entered_tree.disconnect(_on_scene_load)
 
 # TODO: Process is in the middle of the game loop, so adding a delay here increases the input latency.
 # It would be good to add the delay somewhere else, but currently there seems to be no other suitable location.

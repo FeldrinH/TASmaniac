@@ -47,9 +47,6 @@ var input_file: String = ""
 var inputs: PackedStringArray = []
 var inputs_i := 0
 
-#var input_log_level: String
-#var input_log: PackedStringArray = []
-
 func init(recordings_folder: String, level_loader: Node, menu_loader: Node, global: Node):
 	self.recordings_folder = recordings_folder
 	self.level_loader = level_loader
