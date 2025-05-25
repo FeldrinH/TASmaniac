@@ -70,16 +70,25 @@ func command_play_level(command: Dictionary) -> Dictionary:
 		return {"status": "error", "message": "missing or invalid parameter 'level'"}
 	if command["inputs"] is not Array:
 		return {"status": "error", "message": "missing or invalid parameter 'inputs'"}
+	if command.get("start_positions") != null and command.get("start_positions") is not Array:
+		return {"status": "error", "message": "invalid parameter 'start_positions'"}
 	var level: int = command["level"]
 	var inputs: PackedStringArray = command["inputs"]
-	
-	print(headless)
+	var start_positions = command["start_positions"]
+	if start_positions != null:
+		if len(start_positions) != 2:
+			return {"status": "error", "message": "expected 2 start positions, but got %s" % len(start_positions)}
+		for i in 2:
+			var position = start_positions[i]
+			if position is not Array or len(position) != 2 or !position.all(func(v): return v is float):
+				return {"status": "error", "message": "invalid start position %s" % str(position)}
+			start_positions[i] = Vector2(position[0], position[1])
 	
 	var original_delta_multiplier = get_tree()._delta_multiplier
 	if headless:
 		get_tree()._set_delta_multiplier(0.0)
 	
-	manager.start_manual_playback(level, inputs)
+	manager.start_manual_playback(level, inputs, start_positions)
 	var completed: bool = await level_finished
 	
 	if headless:

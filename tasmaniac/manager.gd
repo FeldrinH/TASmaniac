@@ -121,7 +121,7 @@ func show_notification(text: String):
 	notification_label_timer.stop()
 	notification_label_timer.start()
 
-func start_manual_playback(level: int, level_inputs: PackedStringArray):
+func start_manual_playback(level: int, level_inputs: PackedStringArray, level_start_positions):
 	input_file_input.select(-1)
 	recording = false
 	playback = true
@@ -132,6 +132,13 @@ func start_manual_playback(level: int, level_inputs: PackedStringArray):
 	
 	level_loader.unload_level()
 	menu_loader.manage_load_level(level, 1, 0, 0)
+	
+	if level_start_positions:
+		set_player_positions.call_deferred(level_start_positions)
+
+func set_player_positions(positions):
+	for i in 2:
+		global.player_charas[i].global_position = positions[i] * Vector2(1, -1)
 
 func save_recording(incomplete: bool):
 	var error := DirAccess.make_dir_absolute(recordings_folder)
