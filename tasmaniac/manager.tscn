@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://d3p4ph2811rxu"]
+[gd_scene load_steps=5 format=3 uid="uid://d3p4ph2811rxu"]
 
 [ext_resource type="Script" path="res://tasmaniac/manager.gd" id="1_t0yln"]
 
@@ -9,6 +9,9 @@ physical_keycode = 83
 
 [sub_resource type="Shortcut" id="Shortcut_4mtt3"]
 events = [SubResource("InputEventKey_q0dra")]
+
+[sub_resource type="SystemFont" id="SystemFont_dw2yt"]
+font_names = PackedStringArray("Consolas", "Monospace")
 
 [node name="TASmaniacManager" type="Node"]
 process_priority = -1
@@ -76,8 +79,8 @@ anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -92.0
-offset_top = 70.0
-offset_bottom = 93.0
+offset_top = 130.0
+offset_bottom = 153.0
 grow_horizontal = 0
 
 [node name="Timer" type="Timer" parent="NotificationLabel"]
@@ -95,22 +98,55 @@ grow_horizontal = 0
 grow_vertical = 0
 text = "v0.0.0 / v0.0.0"
 
-[node name="CoyoteInfo" type="HBoxContainer" parent="."]
-visible = false
+[node name="PlayerInfo" type="GridContainer" parent="."]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -149.0
 offset_top = 45.0
-offset_bottom = 68.0
+offset_bottom = 122.0
 grow_horizontal = 0
+columns = 3
 
-[node name="Label" type="Label" parent="CoyoteInfo"]
+[node name="CoyoteLabel" type="Label" parent="PlayerInfo"]
 layout_mode = 2
 text = "Coyote:"
 
-[node name="Left" type="Label" parent="CoyoteInfo"]
+[node name="CoyoteLeft" type="Label" parent="PlayerInfo"]
 layout_mode = 2
+size_flags_vertical = 8
+theme_override_fonts/font = SubResource("SystemFont_dw2yt")
 
-[node name="Right" type="Label" parent="CoyoteInfo"]
+[node name="CoyoteRight" type="Label" parent="PlayerInfo"]
 layout_mode = 2
+size_flags_vertical = 8
+theme_override_fonts/font = SubResource("SystemFont_dw2yt")
+
+[node name="PositionLabel" type="Label" parent="PlayerInfo"]
+layout_mode = 2
+text = "Position:"
+
+[node name="PositionLeft" type="Label" parent="PlayerInfo"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_fonts/font = SubResource("SystemFont_dw2yt")
+
+[node name="PositionRight" type="Label" parent="PlayerInfo"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_fonts/font = SubResource("SystemFont_dw2yt")
+
+[node name="VelocityLabel" type="Label" parent="PlayerInfo"]
+layout_mode = 2
+text = "Velocity:"
+
+[node name="VelocityLeft" type="Label" parent="PlayerInfo"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_fonts/font = SubResource("SystemFont_dw2yt")
+
+[node name="VelocityRight" type="Label" parent="PlayerInfo"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_fonts/font = SubResource("SystemFont_dw2yt")
+text = "0.00"

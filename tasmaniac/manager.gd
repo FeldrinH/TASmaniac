@@ -21,9 +21,10 @@ const collision_drawer_script := preload("res://tasmaniac/collision_drawer.gd")
 @onready var timer_label: Label = $TimerLabel
 @onready var notification_label: Label = $NotificationLabel
 @onready var notification_label_timer: Timer = $NotificationLabel/Timer
-@onready var coyote_info: Container = $CoyoteInfo
-@onready var coyote_left_label: Label = $CoyoteInfo/Left
-@onready var coyote_right_label: Label = $CoyoteInfo/Right
+@onready var player_info: Container = $PlayerInfo
+@onready var coyote_labels: Array[Label] = [$PlayerInfo/CoyoteLeft, $PlayerInfo/CoyoteRight]
+@onready var position_labels: Array[Label] = [$PlayerInfo/PositionLeft, $PlayerInfo/PositionRight]
+@onready var velocity_labels: Array[Label] = [$PlayerInfo/VelocityLeft, $PlayerInfo/VelocityRight]
 
 var default_tps := Engine.physics_ticks_per_second
 
@@ -250,11 +251,13 @@ func _process(delta: float):
 		timer_label.text = ""
 	
 	if is_instance_valid(global.player_charas[0]):
-		coyote_info.visible = true
-		coyote_left_label.text = "%.3f" % global.player_charas[0].coyote_timer.time_left
-		coyote_right_label.text = "%.3f" % global.player_charas[1].coyote_timer.time_left
+		player_info.visible = true
+		for i in 2:
+			coyote_labels[i].text = "%.3f" % global.player_charas[i].coyote_timer.time_left
+			position_labels[i].text = "%7.2v" % (global.player_charas[i].global_position * Vector2(1, -1))
+			velocity_labels[i].text = "%7.2v" % (global.player_charas[i].velocity * Vector2(1, -1))
 	else:
-		coyote_info.visible = false
+		player_info.visible = false
 	
 	if not level_loaded:
 		return
