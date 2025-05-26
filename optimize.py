@@ -45,7 +45,7 @@ def combine(offsets: Sequence[int], keys: Sequence[str], split_index: int) -> li
 if __name__ == '__main__':
     # 0 and 101 are excluded for now, because 0 needs some kind of timeout to avoid infinite runs
     # and 101 is just too long to optimize with such a brute force method.
-    for level in range(23, 101):
+    for level in range(1, 101):
         inputs_file = sorted(Path('recordings').glob(f'lvl{level:03d}_*.txt'))[0]
 
         with open(inputs_file, mode='r') as f:
@@ -57,7 +57,7 @@ if __name__ == '__main__':
 
             base_completed, base_duration = play_level(connection, level, base_inputs)
             if not base_completed:
-                raise AssertionError("Base inputs did not complete level")
+                raise AssertionError(f"Optimizing {inputs_file}: Base inputs in did not complete level")
             print(f"Optimizing {inputs_file}: {base_duration} frames, {len(base_offsets)} offsets")
 
             visited = set[tuple[int, ...]]()
@@ -78,9 +78,11 @@ if __name__ == '__main__':
                 
                 for _ in range(20):
                     new_offsets = list(offsets)
-                    new_offsets[rng.randrange(len(new_offsets))] += rng.randint(-10, 10)
+                    random_index = rng.randrange(len(new_offsets))
+                    random_offset = rng.randint(-10, 10)
+                    new_offsets[random_index] += random_offset
                     new_offsets = tuple(new_offsets)
-                    if new_offsets in visited:
+                    if new_offsets[random_index] < 0 or new_offsets in visited:
                         continue
                     new_inputs = combine(new_offsets, keys, split_index)
                     completed, duration = play_level(connection, level, new_inputs)
