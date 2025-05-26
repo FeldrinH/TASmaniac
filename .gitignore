@@ -1,5 +1,6 @@
 project.godot
 .godot/
+__pycache__/
 *.txt
 *.exe
 *.pck
