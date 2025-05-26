@@ -74,7 +74,7 @@ if __name__ == '__main__':
                 try:
                     _, offsets = queue.get_nowait()
                 except Empty:
-                    offsets = base_offsets
+                    break
                 
                 for _ in range(20):
                     new_offsets = list(offsets)
