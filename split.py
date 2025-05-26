@@ -21,7 +21,7 @@ def do_split(input_file: Path, output_file: Path):
             else:
                 out_right.append((int(frame), key))
     
-    for inputs in [out_left, out_right]:
+    for inputs in (out_left, out_right):
         last_frame = 0
         for i, (frame, key) in enumerate(inputs):
             offset = frame - last_frame
