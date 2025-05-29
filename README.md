@@ -40,6 +40,15 @@ To record or play back a sequence of inputs simply select the action from the dr
 All recordings are saved in a `recordings` folder inside your TASmaniac install folder and are named based on the level and completion time.
 A recording is saved only if you successfully complete a level.
 
+## WebSocket server
+
+It is possible to run TASManiac as a WebSocket server. This allows you to send requests to play levels with a provided list of inputs from any programming language that has a WebSocket client.
+The levels are played with uncapped FPS, to evaluate inputs as fast as possible.
+
+To start a WebSocket server, run `launch_tasmaniac_server.bat`.
+
+For an example of how to communicate with the server API, see [server.py](server.py). For an example of a simple automatic optimizer using the WebSocket server see [optimize.py](optimize.py).
+
 ## Existing TAS run
 
-An incomplete set of inputs for a work-in-progress TAS run can be found [here](https://docs.google.com/spreadsheets/d/1kA16tzJ-diouDjB213JCW4X9J4LKVxMMdmYSAMIR64Y/edit?gid=0#gid=0). If you want to contribute to it then contact me on the [Ambidextro Speedrunning Discord](https://discord.gg/q7cB2sSQZn).
+The inputs for the current TAS run can be found [here](https://docs.google.com/spreadsheets/d/1kA16tzJ-diouDjB213JCW4X9J4LKVxMMdmYSAMIR64Y/edit?gid=0#gid=0). If you want to contribute to it then contact me on the [Ambidextro Speedrunning Discord](https://discord.gg/q7cB2sSQZn).
