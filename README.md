@@ -45,7 +45,7 @@ A recording is saved only if you successfully complete a level.
 It is possible to run TASManiac as a WebSocket server. This allows you to send requests to play levels with a provided list of inputs from any programming language that has a WebSocket client.
 The levels are played with uncapped FPS, to evaluate inputs as fast as possible.
 
-To start a WebSocket server, run `launch_tasmaniac_server.bat`.
+To start the WebSocket server, run `launch_tasmaniac_server.bat`.
 
 For an example of how to communicate with the server API, see [server.py](server.py). For an example of a simple automatic optimizer using the WebSocket server see [optimize.py](optimize.py).
 
