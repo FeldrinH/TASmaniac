@@ -6,8 +6,7 @@ This is a tool for creating tool assisted speedruns for the game Ambidextro. You
 
 1. Download the latest version of TASmaniac from [here](https://github.com/FeldrinH/TASmaniac/archive/refs/heads/main.zip) and unpack the ZIP file to a folder of your choosing.
 2. Locate the Ambidextro install on your computer. This folder should contain `Ambidextro.exe`, `Ambidextro.pck` and a few other files. On Windows when playing through Steam it is located at `C:\Program Files (x86)\Steam\steamapps\common\Ambidextro`.
-4. Copy all the files from your Ambidextro install location and paste them in the folder where you unpacked TASmaniac.  
-   The final contents of the folder should look like this:  
+4. Copy all the files from your Ambidextro install location and paste them in the folder where you unpacked TASmaniac. The final contents of the folder should look like this:  
 ![image](https://github.com/user-attachments/assets/6f1d954f-8478-480b-97c5-b65454e1286e)
 
 You now have a working installation of TASmaniac. Double-click `launch_tasmaniac.bat` (Windows) or `launch_tasmaniac.sh` (Linux) to launch it.
