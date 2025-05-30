@@ -26,6 +26,7 @@ const collision_drawer_script := preload("res://tasmaniac/collision_drawer.gd")
 @onready var position_labels: Array[Label] = [$PlayerInfo/PositionLeft, $PlayerInfo/PositionRight]
 @onready var velocity_labels: Array[Label] = [$PlayerInfo/VelocityLeft, $PlayerInfo/VelocityRight]
 
+var headless := !DisplayServer.window_can_draw()
 var default_tps := Engine.physics_ticks_per_second
 
 var recordings_folder: String
@@ -285,7 +286,8 @@ func _process(delta: float):
 			if target_frame > frame:
 				break
 			
-			print("[TASmaniac] " + inputs[inputs_i])
+			if headless:
+				print("[TASmaniac] " + inputs[inputs_i])
 			for input in parts.slice(1):
 				var prefix := input.substr(0, 1)
 				var key := input.substr(1)
