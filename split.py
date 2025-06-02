@@ -65,7 +65,8 @@ def do_combine(input_file: Path, output_file: Path):
                 print(f"ERROR: Unknown section: {section}")
                 sys.exit(1)
             continue
-        offset, keys = line.split(maxsplit=1)
+        components = line.split(maxsplit=1)
+        offset, keys = components if len(components) == 2 else (line, "") 
         frame += int(offset)
         inputs_out.append((frame, keys))
     inputs_out.sort()
