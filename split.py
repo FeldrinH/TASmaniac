@@ -66,9 +66,13 @@ def do_combine(input_file: Path, output_file: Path):
                 sys.exit(1)
             continue
         components = line.split(maxsplit=1)
-        offset, keys = components if len(components) == 2 else (line, "") 
-        frame += int(offset)
-        inputs_out.append((frame, keys))
+        if len(components) == 2:
+            offset, keys = components
+            frame += int(offset)
+            inputs_out.append((frame, keys))
+        else:
+            offset = line
+            frame += int(offset)
     inputs_out.sort()
 
     with open(output_file, mode='w') as f:
