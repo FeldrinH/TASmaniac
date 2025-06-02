@@ -286,7 +286,7 @@ func _process(delta: float):
 			if target_frame > frame:
 				break
 			
-			if headless:
+			if !headless:
 				print("[TASmaniac] " + inputs[inputs_i])
 			for input in parts.slice(1):
 				var prefix := input.substr(0, 1)
