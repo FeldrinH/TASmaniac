@@ -81,19 +81,28 @@ def do_combine(input_file: Path, output_file: Path):
     print(f"Written combined output to {output_file}")
 
 if __name__ == '__main__':
-    if sys.argv[1] == 'split':
-        input_file = Path(sys.argv[2])
+    args = [arg for arg in sys.argv[1:] if not arg.startswith('--')]
+    flags = [arg for arg in sys.argv[1:] if arg.startswith('--')]
+    if len(args) == 1:
+        original_file = Path(args[0])
+        input_file = original_file.with_stem(original_file.stem + '_split')
+        output_file = original_file.with_stem(original_file.stem + '_combined')
+        if not input_file.exists():
+            do_split(original_file, input_file)
+        func = lambda: do_combine(input_file, output_file)
+    elif args[0] == 'split':
+        input_file = Path(args[1])
         output_file = input_file.with_stem(input_file.stem + '_split')
         func = lambda: do_split(input_file, output_file)
-    elif sys.argv[1] == 'combine':
-        input_file = Path(sys.argv[2])
+    elif args[0] == 'combine':
+        input_file = Path(sys.argv[1])
         output_file = input_file.with_stem(input_file.stem.removesuffix('_split') + '_combined')
         func = lambda: do_combine(input_file, output_file)
     else:
         print(f"ERROR: Unknown command: {sys.argv[1]}")
         sys.exit(1)
     
-    if '--watch' in sys.argv[1:]:
+    if '--watch' in flags:
         from watchdog.events import FileModifiedEvent, FileSystemEventHandler
 
         class EventHandler(FileSystemEventHandler):

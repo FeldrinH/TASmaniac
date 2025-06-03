@@ -1,3 +1,4 @@
+import sys
 from typing import Sequence
 from pathlib import Path
 from queue import PriorityQueue, Empty
@@ -43,9 +44,17 @@ def combine(offsets: Sequence[int], keys: Sequence[str], split_index: int) -> li
     return [f'{f} {k}' for f, k in inputs_out]
 
 if __name__ == '__main__':
-    # 0 and 101 are excluded for now, because 0 needs some kind of timeout to avoid infinite runs
-    # and 101 is just too long to optimize with such a brute force method.
-    for level in range(1, 101):
+    if len(sys.argv) == 2:
+        start = int(sys.argv[1])
+        end = start + 1
+    elif len(sys.argv) == 3:
+        start = int(sys.argv[1])
+        end = int(sys.argv[2])
+    else:
+        print(f"ERROR: Expected 1 or 2 arguments")
+        sys.exit(1)
+
+    for level in range(start, end):
         inputs_file = sorted(Path('recordings').glob(f'lvl{level:03d}_*.txt'))[0]
 
         with open(inputs_file, mode='r') as f:
