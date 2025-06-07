@@ -25,7 +25,6 @@ class TASExecutor:
     """
 
     def __init__(self, max_workers: int) -> None:
-        self._max_workers = max_workers
         self._executor = ThreadPoolExecutor(max_workers=max_workers, initializer=self._create_connection)
         self._processes = []
         self._connections = []

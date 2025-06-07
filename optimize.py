@@ -3,7 +3,7 @@ from typing import Sequence
 from pathlib import Path
 from queue import PriorityQueue, Empty
 import random
-from server import connect, play_level
+from tas_server import TASExecutor, play_level
 
 
 def split(inputs: list[str]) -> tuple[list[int], list[str], int]:
@@ -54,17 +54,17 @@ if __name__ == '__main__':
         print(f"ERROR: Expected 1 or 2 arguments")
         sys.exit(1)
 
-    for level in range(start, end):
-        inputs_file = sorted(Path('recordings').glob(f'lvl{level:03d}_*.txt'))[0]
+    with TASExecutor(max_workers=10) as executor:
+        for level in range(start, end):
+            inputs_file = sorted(Path('recordings').glob(f'lvl{level:03d}_*.txt'))[0]
 
-        with open(inputs_file, mode='r') as f:
-            base_inputs = f.read().splitlines()
+            with open(inputs_file, mode='r') as f:
+                base_inputs = f.read().splitlines()
 
-        with connect() as connection:
             base_offsets, keys, split_index = split(base_inputs)
             base_offsets = tuple(base_offsets)
 
-            base_completed, base_duration = play_level(connection, level, base_inputs)
+            base_completed, base_duration = executor.submit(lambda conn: play_level(conn, level, base_inputs)).result()
             if not base_completed:
                 raise AssertionError(f"Optimizing {inputs_file}: Base inputs in did not complete level")
             print(f"Optimizing {inputs_file}: {base_duration} frames, {len(base_offsets)} offsets")
@@ -75,7 +75,7 @@ if __name__ == '__main__':
             queue.put((base_duration, base_offsets))
 
             best_duration = base_duration
-            best_inputs = base_inputs
+            best_offsets = base_offsets
 
             rng = random.Random()
 
@@ -85,6 +85,7 @@ if __name__ == '__main__':
                 except Empty:
                     break
                 
+                all_new_offsets = []
                 for _ in range(20):
                     new_offsets = list(offsets)
                     random_index = rng.randrange(len(new_offsets))
@@ -93,19 +94,26 @@ if __name__ == '__main__':
                     new_offsets = tuple(new_offsets)
                     if new_offsets[random_index] < 0 or new_offsets in visited:
                         continue
+                    all_new_offsets.append(new_offsets)
+                    visited.add(new_offsets)
+                
+                def evaluate(connection, new_offsets):
                     new_inputs = combine(new_offsets, keys, split_index)
                     completed, duration = play_level(connection, level, new_inputs)
+                    return completed, duration, new_offsets
+                
+                for completed, duration, new_offsets in executor.map(evaluate, all_new_offsets):
                     if completed:
                         if duration < best_duration:
                             best_duration = duration
-                            best_inputs = new_inputs
-                            print(f"New best: {duration} frames")
-                        visited.add(new_offsets)
+                            best_offsets = new_offsets
+                            print(f"New best: {duration} frames ({duration / 60:.2f} seconds)")
                         queue.put((duration, new_offsets))
                 
                 print(f"Queue: {queue.qsize()} items, Visited: {len(visited)} items")
             print()
 
             if best_duration < base_duration:
+                best_inputs = combine(best_offsets, keys, split_index)
                 with open(inputs_file.with_stem(f'{inputs_file.stem.split('_')[0]}_{best_duration / 60:05.2f}_optimized'), mode='w') as f:
                     f.write('\n'.join(best_inputs))
