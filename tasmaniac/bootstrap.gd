@@ -6,6 +6,8 @@ var _recordings_folder: String
 var _manager_scene: PackedScene
 var _websocket_server_script: GDScript
 
+var _websocket_server_port = null
+
 var _delta_multiplier := 1.0
 
 var _last_frame_usec := 0
@@ -35,7 +37,17 @@ func _initialize():
 	_manager_scene = load("res://tasmaniac/manager.tscn")
 	_assert(_manager_scene != null, "Failed to load tasmaniac/manager.tscn. Make sure that you have copied the entire tasmaniac folder to your install location.")
 	
-	if "--server" in flags:
+	for flag in flags:
+		if flag == "--server":
+			_websocket_server_port = 7111
+		elif flag.begins_with("--server="):
+			var port_string = flag.trim_prefix("--server=")
+			_assert(port_string.is_valid_int(), "Invalid server port: %s" % port_string)
+			_websocket_server_port = port_string.to_int()
+		else:
+			_assert(false, "Unrecognized command line flag: %s" % flag)
+	
+	if _websocket_server_port != null:
 		_websocket_server_script = load("res://tasmaniac/websocket_server.gd")
 		_assert(_websocket_server_script != null, "Failed to load tasmaniac/websocket_server.gd. Make sure that you have copied the entire tasmaniac folder to your install location.")
 	
@@ -63,8 +75,8 @@ func _on_scene_load(scene: Node):
 		manager.init(_recordings_folder, level_loader, menu_loader, global)
 		scene.add_child(manager)
 		
-		if _websocket_server_script != null:
-			var websocket_server: Node = _websocket_server_script.new(7111, manager)
+		if _websocket_server_port != null:
+			var websocket_server: Node = _websocket_server_script.new(_websocket_server_port, manager)
 			scene.add_child(websocket_server)
 		
 		root.child_entered_tree.disconnect(_on_scene_load)
