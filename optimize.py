@@ -67,7 +67,7 @@ if __name__ == '__main__':
             base_completed, base_duration = executor.submit(lambda conn: play_level(conn, level, base_inputs)).result()
             if not base_completed:
                 raise AssertionError(f"Optimizing {inputs_file}: Base inputs in did not complete level")
-            print(f"Optimizing {inputs_file}: {base_duration} frames, {len(base_offsets)} offsets")
+            print(f"Optimizing {inputs_file}: {base_duration} frames ({base_duration / 60:.2f} seconds), {len(base_offsets)} offsets")
 
             visited = set[tuple[int, ...]]()
             queue = PriorityQueue[tuple[int, tuple[int, ...]]]()

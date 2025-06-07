@@ -1,3 +1,4 @@
+import sys
 import json
 import subprocess
 from threading import Lock
@@ -8,9 +9,16 @@ import websockets.sync.client as client
 from websockets.sync.connection import Connection
 
 
-# Before running this script start the TASmaniac WebSocket server by running launch_tasmaniac_server.bat.
 # Required libraries: `pip install websockets`.
+# Note: If you are using `connect` directly then you need to manually start the TASmaniac WebSocket server by running launch_tasmaniac_server.bat.
 
+
+if sys.platform == 'win32':
+    _AMBIDEXTRO_EXECUTABLE = './Ambidextro.exe'
+elif sys.platform == 'linux':
+    _AMBIDEXTRO_EXECUTABLE = './Ambidextro.x86_64'
+else:
+    _AMBIDEXTRO_EXECUTABLE = None
 
 _lock = Lock()
 _next_port = 7112
@@ -30,11 +38,17 @@ class TASExecutor:
         self._connections = []
     
     def _create_connection(self):
+        if _AMBIDEXTRO_EXECUTABLE is None:
+            raise RuntimeError("Cannot start TASmaniac server, unsupported platform")
+
         global _next_port
         with _lock:
             port = _next_port
             _next_port += 1
-            process = subprocess.Popen(['.\\launch_tasmaniac_server.bat', f'--server={port}'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            process = subprocess.Popen(
+                [_AMBIDEXTRO_EXECUTABLE, '--script', 'tasmaniac/bootstrap.gd', '--fixed-fps', '120', '--disable-vsync', '--headless', '--disable-render-loop', '--', f'--server={port}'],
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+            )
             self._processes.append(process)
             connection = connect(f'ws://localhost:{port}')
             self._connections.append(connection)
@@ -48,7 +62,12 @@ class TASExecutor:
         for connection in self._connections:
             connection.close()
         for process in self._processes:
-            process.terminate() # TODO: This does not work on Windows due to some quirk with how .bat files start subprocesses
+            process.terminate()
+        for process in self._processes:
+            try:
+                process.wait(timeout=0.5)
+            except subprocess.TimeoutExpired:
+                pass # TODO: Add some kind of warning about potential zombie processes?
     
     def submit[T](self, fn: Callable[[Connection], T]) -> Future[T]:
         return self._executor.submit(lambda: fn(_connection.get()))
