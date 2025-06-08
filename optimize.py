@@ -49,7 +49,7 @@ if __name__ == '__main__':
         end = start + 1
     elif len(sys.argv) == 3:
         start = int(sys.argv[1])
-        end = int(sys.argv[2])
+        end = int(sys.argv[2]) + 1
     else:
         print(f"ERROR: Expected 1 or 2 arguments")
         sys.exit(1)
@@ -86,7 +86,7 @@ if __name__ == '__main__':
                     break
                 
                 all_new_offsets = []
-                for _ in range(20):
+                for _ in range(80):
                     new_offsets = list(offsets)
                     random_index = rng.randrange(len(new_offsets))
                     random_offset = rng.randint(-10, 10)
