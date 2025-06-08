@@ -2,6 +2,8 @@ extends SceneTree
 
 const _VERSION = "v0.7.0"
 
+var _headless := !DisplayServer.window_can_draw()
+
 var _recordings_folder: String
 var _manager_scene: PackedScene
 var _websocket_server_script: GDScript
@@ -67,6 +69,11 @@ func _initialize():
 
 func _on_scene_load(scene: Node):
 	if scene.name == "MainScene":
+		if _headless:
+			# Viewport resolution affects out of bounds detection in final level.
+			# For consistency we default to standard Full HD if there is no display.
+			root.size = Vector2i(1920, 1080)
+		
 		var level_loader := scene.get_node("LevelLoader")
 		var menu_loader := scene.get_node("MenuLoader")
 		var global := root.get_node("Global")
