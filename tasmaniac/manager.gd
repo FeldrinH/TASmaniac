@@ -23,6 +23,7 @@ const collision_drawer_script := preload("res://tasmaniac/collision_drawer.gd")
 @onready var notification_label_timer: Timer = $NotificationLabel/Timer
 @onready var player_info: Container = $PlayerInfo
 @onready var coyote_labels: Array[Label] = [$PlayerInfo/CoyoteLeft, $PlayerInfo/CoyoteRight]
+@onready var alignment_labels: Array[Label] = [$PlayerInfo/AlignmentLeft, $PlayerInfo/AlignmentRight]
 @onready var position_labels: Array[Label] = [$PlayerInfo/PositionLeft, $PlayerInfo/PositionRight]
 @onready var velocity_labels: Array[Label] = [$PlayerInfo/VelocityLeft, $PlayerInfo/VelocityRight]
 
@@ -259,6 +260,7 @@ func _process(delta: float):
 		player_info.visible = true
 		for i in 2:
 			coyote_labels[i].text = "%.3f" % global.player_charas[i].coyote_timer.time_left
+			alignment_labels[i].text = "%.3f" % fposmod(global.player_charas[i].global_position.x, (130.0 / 60.0))
 			position_labels[i].text = "%7.2v" % (global.player_charas[i].global_position * Vector2(1, -1))
 			velocity_labels[i].text = "%7.2v" % (global.player_charas[i].velocity * Vector2(1, -1))
 	else:

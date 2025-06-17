@@ -79,8 +79,8 @@ anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -92.0
-offset_top = 130.0
-offset_bottom = 153.0
+offset_top = 155.0
+offset_bottom = 178.0
 grow_horizontal = 0
 
 [node name="Timer" type="Timer" parent="NotificationLabel"]
@@ -122,6 +122,20 @@ layout_mode = 2
 size_flags_vertical = 8
 theme_override_fonts/font = SubResource("SystemFont_dw2yt")
 
+[node name="AlignmentLabel" type="Label" parent="PlayerInfo"]
+layout_mode = 2
+text = "Alignment:"
+
+[node name="AlignmentLeft" type="Label" parent="PlayerInfo"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_fonts/font = SubResource("SystemFont_dw2yt")
+
+[node name="AlignmentRight" type="Label" parent="PlayerInfo"]
+layout_mode = 2
+size_flags_vertical = 8
+theme_override_fonts/font = SubResource("SystemFont_dw2yt")
+
 [node name="PositionLabel" type="Label" parent="PlayerInfo"]
 layout_mode = 2
 text = "Position:"
@@ -149,4 +163,3 @@ theme_override_fonts/font = SubResource("SystemFont_dw2yt")
 layout_mode = 2
 size_flags_vertical = 8
 theme_override_fonts/font = SubResource("SystemFont_dw2yt")
-text = "0.00"
