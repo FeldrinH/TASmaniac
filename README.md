@@ -47,7 +47,7 @@ The levels are played with uncapped FPS, to evaluate inputs as fast as possible.
 
 To start the WebSocket server, run `launch_tasmaniac_server.bat`.
 
-For an example of how to communicate with the server API, see [server.py](server.py). For an example of a simple automatic optimizer using the WebSocket server see [optimize.py](optimize.py).
+For an example of how to communicate with the server API, see [tas_server.py](tas_server.py). For an example of a simple automatic optimizer using the WebSocket server see [optimize.py](optimize.py).
 
 ## Existing TAS run
 
