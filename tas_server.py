@@ -30,6 +30,8 @@ class TASExecutor:
     Thread pool executor that starts a new TASmaniac server for each worker thread.
     The corresponding connection is passed as an argument to functions executed using `submit` and `map`.
     This allows you to run multiple commands in parallel on separate servers, to take better advantage of having multiple CPU cores.
+
+    Use this with a `with` block to automatically clean up the server processes and connections.
     """
 
     def __init__(self, max_workers: int) -> None:
