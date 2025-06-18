@@ -1,6 +1,6 @@
 extends SceneTree
 
-const _VERSION = "v0.7.3"
+const _VERSION = "v0.7.4"
 
 var _headless := !DisplayServer.window_can_draw()
 
