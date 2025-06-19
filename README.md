@@ -30,6 +30,7 @@ TASmaniac has the following features:
 * Slow down time to make tricky moves easier to execute.
 * Show a timer that indicates active time spent in the level. The timer starts on first input.
 * Show player info including remaining coyote time, position, and velocity.
+* Visualize player and hazard collision shapes.
 
 TASmaniac is operated from a small menu that appears in the top left corner of the game:
 ![image](https://github.com/user-attachments/assets/de3022c4-6711-493e-a78f-77ff525c1396)
