@@ -76,7 +76,7 @@ func command_play_level(command: Dictionary) -> Dictionary:
 	var inputs: PackedStringArray = command["inputs"]
 	var start_positions = command["start_positions"]
 	for input in inputs:
-		if input.begins_with("-"):
+		if input.lstrip(" ").begins_with("-"):
 			return {"status": "error", "message": "invalid input '%s'" % input}
 	if start_positions != null:
 		if len(start_positions) != 2:
