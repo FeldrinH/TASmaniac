@@ -1,4 +1,4 @@
-# TASManiac (Ambidextro TAS tool)
+# TASmaniac (Ambidextro TAS tool)
 
 This is a tool for creating tool assisted speedruns for the game Ambidextro. You need a copy of the base game to run this tool (you can buy it on [Steam](https://store.steampowered.com/app/3445580/Ambidextro/)).
 
@@ -45,7 +45,7 @@ A recording is saved only if you successfully complete a level.
 
 ## WebSocket server
 
-It is possible to run TASManiac as a WebSocket server. This allows you to send requests to play levels with a provided list of inputs from any programming language that has a WebSocket client.
+It is possible to run TASmaniac as a WebSocket server. This allows you to send requests to play levels with a provided list of inputs from any programming language that has a WebSocket client.
 The levels are played with uncapped FPS, to evaluate inputs as fast as possible.
 
 To start the WebSocket server, run `launch_tasmaniac_server.bat` or the equivalent script for your operating system.
