@@ -9,7 +9,9 @@ This is a tool for creating tool assisted speedruns for the game Ambidextro. You
 4. Copy all the files from your Ambidextro install location and paste them in the folder where you unpacked TASmaniac. The final contents of the folder should look like this:  
 ![image](https://github.com/user-attachments/assets/6f1d954f-8478-480b-97c5-b65454e1286e)
 
-You now have a working installation of TASmaniac. Double-click `launch_tasmaniac.bat` (Windows) or `launch_tasmaniac.sh` (Linux) to launch it.
+You now have a working installation of TASmaniac. Double-click `launch_tasmaniac.bat` (Windows), `launch_tasmaniac.linux.sh` (Linux) or `launch_tasmaniac.macos.sh` (macOS) to launch it.
+
+Note: macOS support is provisional. I implemented it by looking at the Ambidextro macOS bundle, but I have not tested it because I do not own a Mac. If you encounter any problems, feel free to open an issue.
 
 ## Updating
 
@@ -45,7 +47,7 @@ A recording is saved only if you successfully complete a level.
 It is possible to run TASManiac as a WebSocket server. This allows you to send requests to play levels with a provided list of inputs from any programming language that has a WebSocket client.
 The levels are played with uncapped FPS, to evaluate inputs as fast as possible.
 
-To start the WebSocket server, run `launch_tasmaniac_server.bat`.
+To start the WebSocket server, run `launch_tasmaniac_server.bat` or the equivalent script for your operating system.
 
 For an example of how to communicate with the server API, see [tas_server.py](tas_server.py). For an example of a simple automatic optimizer using the WebSocket server see [optimize.py](optimize.py).
 
