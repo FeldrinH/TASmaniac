@@ -71,11 +71,7 @@ def minimize_level(connection, level: int):
             best_duration = new_duration
             best_inputs = new_inputs
     
-    if len(best_inputs) != len(base_inputs):
-        print(f"Minimized {inputs_file} from {len(base_inputs)} inputs to {len(best_inputs)} inputs")
-
-        with open(inputs_file.with_stem(f'{inputs_file.stem.split('_')[0]}_{best_duration / 60:05.2f}_minimized_{len(base_inputs)}_{len(best_inputs)}'), mode='w') as f:
-            f.write('\n'.join(best_inputs))
+    return inputs_file, best_duration, base_inputs, best_inputs
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
@@ -89,5 +85,11 @@ if __name__ == '__main__':
         sys.exit(1)
 
     with TASExecutor(max_workers=10) as executor:
-        for _ in executor.map(minimize_level, range(start, end)):
-            pass
+        for inputs_file, best_duration, base_inputs, best_inputs in executor.map(minimize_level, range(start, end)):
+            if len(best_inputs) != len(base_inputs):
+                print(f"Minimized {inputs_file} from {len(base_inputs)} inputs to {len(best_inputs)} inputs")
+
+                with open(inputs_file.with_stem(f'{inputs_file.stem.split('_')[0]}_{best_duration / 60:05.2f}_minimized_{len(base_inputs)}_{len(best_inputs)}'), mode='w') as f:
+                    f.write('\n'.join(best_inputs))
+            else:
+                print(f"Minimized {inputs_file}, no change")
