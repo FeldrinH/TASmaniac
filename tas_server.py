@@ -97,9 +97,9 @@ def play_level(connection: Connection, level: int, inputs: list[str], start_posi
     response = json.loads(connection.recv(decode=True))
 
     if response['status'] != 'executed':
-        raise AssertionError(f"Unexpected response from TAS: {response}")
+        raise AssertionError(f"TAS returned unexpected response: {response}")
     if response['duration_ticks'] <= 0:
-        raise AssertionError(f"Suspicious duration: {response['duration_ticks']}")
+        raise AssertionError(f"TAS returned suspicious duration: {response['duration_ticks']}")
 
     return response['level_completed'], response['duration_ticks']
 
