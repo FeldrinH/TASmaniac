@@ -17,6 +17,8 @@ if sys.platform == 'win32':
     _AMBIDEXTRO_EXECUTABLE = './Ambidextro.exe'
 elif sys.platform == 'linux':
     _AMBIDEXTRO_EXECUTABLE = './Ambidextro.x86_64'
+elif sys.platform == 'darwin':
+    _AMBIDEXTRO_EXECUTABLE = './Ambidextro.app/Contents/MacOS/Ambidextro'
 else:
     _AMBIDEXTRO_EXECUTABLE = None
 
