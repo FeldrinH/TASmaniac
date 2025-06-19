@@ -32,8 +32,8 @@ TASmaniac has the following features:
 * Show player info including remaining coyote time, position, and velocity.
 * Visualize player and hazard collision shapes.
 
-TASmaniac is operated from a small menu that appears in the top left corner of the game:
-![image](https://github.com/user-attachments/assets/de3022c4-6711-493e-a78f-77ff525c1396)
+TASmaniac is operated from a small menu that appears in the top left corner of the game:  
+![image](https://github.com/user-attachments/assets/cbc2b0cd-6691-4c10-8e3c-c49c901157e9)
 
 The time scale setting allows you to slow down in-game time. 1.0 is normal speed, smaller time scale values make time run slower. E.g. a time scale of 0.25 means that the game is 4 times slower than normal.
 
