@@ -1,45 +1,7 @@
 import sys
-from typing import Sequence
 from pathlib import Path
 from tas_server import TASExecutor, play_level
 
-
-def split(inputs: list[str]) -> tuple[list[int], list[str], int]:
-    out_left = []
-    out_right = []
-    for line in inputs:
-        if not line:
-            continue
-        frame, *keys = line.split()
-        for key in keys:
-            if key[1] in {'W', 'A', 'D'}:
-                out_left.append((int(frame), key))
-            else:
-                out_right.append((int(frame), key))
-    
-    offsets = []
-    keys = []
-    split_index = len(out_left)
-    for out in (out_left, out_right):
-        last_frame = 0
-        for frame, key in out:
-            offset = frame - last_frame
-            last_frame = frame
-            offsets.append(offset)
-            keys.append(key)
-    
-    return offsets, keys, split_index
-
-def combine(offsets: Sequence[int], keys: Sequence[str], split_index: int) -> list[str]:
-    frame = 0
-    inputs_out = []
-    for i, (offset, key) in enumerate(zip(offsets, keys)):
-        if i == split_index:
-            frame = 0
-        frame += offset
-        inputs_out.append((frame, key))
-    inputs_out.sort()
-    return [f'{f} {k}' for f, k in inputs_out]
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
