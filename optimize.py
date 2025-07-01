@@ -1,8 +1,9 @@
 import sys
+import time
+import random
 from typing import Sequence
 from pathlib import Path
 from queue import PriorityQueue, Empty
-import random
 from tas_server import TASExecutor, play_level
 
 
@@ -64,9 +65,14 @@ if __name__ == '__main__':
             base_offsets, keys, split_index = split(base_inputs)
             base_offsets = tuple(base_offsets)
 
-            base_completed, base_duration = executor.submit(lambda conn: play_level(conn, level, base_inputs)).result()
-            if not base_completed:
+            for _ in range(5):
+                base_completed, base_duration = executor.submit(lambda conn: play_level(conn, level, base_inputs)).result()
+                if base_completed:
+                    break
+                time.sleep(0.5)
+            else:
                 raise AssertionError(f"Optimizing {inputs_file}: Base inputs in did not complete level")
+
             print(f"Optimizing {inputs_file}: {base_duration} frames ({base_duration / 60:.2f} seconds), {len(base_offsets)} offsets")
 
             visited = set[tuple[int, ...]]()
