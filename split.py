@@ -84,6 +84,7 @@ if __name__ == '__main__':
     args = [arg for arg in sys.argv[1:] if not arg.startswith('--')]
     flags = [arg for arg in sys.argv[1:] if arg.startswith('--')]
     if len(args) == 1:
+        watch = True
         original_file = Path(args[0])
         input_file = original_file.with_stem(original_file.stem + '_split')
         output_file = original_file.with_stem(original_file.stem + '_combined')
@@ -91,10 +92,12 @@ if __name__ == '__main__':
             do_split(original_file, input_file)
         func = lambda: do_combine(input_file, output_file)
     elif args[0] == 'split':
+        watch = False
         input_file = Path(args[1])
         output_file = input_file.with_stem(input_file.stem + '_split')
         func = lambda: do_split(input_file, output_file)
     elif args[0] == 'combine':
+        watch = False
         input_file = Path(sys.argv[1])
         output_file = input_file.with_stem(input_file.stem.removesuffix('_split') + '_combined')
         func = lambda: do_combine(input_file, output_file)
@@ -102,7 +105,12 @@ if __name__ == '__main__':
         print(f"ERROR: Unknown command: {sys.argv[1]}")
         sys.exit(1)
     
-    if '--watch' in flags:
+    if '--no-watch' in flags:
+        watch = False
+    elif '--watch' in flags:
+        watch = True
+    
+    if watch:
         from watchdog.events import FileModifiedEvent, FileSystemEventHandler
 
         class EventHandler(FileSystemEventHandler):
