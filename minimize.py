@@ -81,7 +81,7 @@ if __name__ == '__main__':
         start = int(sys.argv[1])
         end = int(sys.argv[2]) + 1
     else:
-        print(f"ERROR: Expected 1 or 2 arguments")
+        print("ERROR: Expected 1 or 2 arguments")
         sys.exit(1)
 
     with TASExecutor(max_workers=10) as executor:
