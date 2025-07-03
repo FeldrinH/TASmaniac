@@ -33,7 +33,7 @@ def split(inputs: list[str]) -> tuple[list[int], list[str], int]:
     
     return offsets, keys, split_index
 
-def combine(offsets: Sequence[int], keys: Sequence[str], split_index: int) -> list[str]:
+def combine(offsets: Sequence[int], keys: Sequence[str], split_index: int) -> list[str] | None:
     frame = 0
     inputs_out = []
     for i, (offset, key) in enumerate(zip(offsets, keys)):
@@ -42,7 +42,10 @@ def combine(offsets: Sequence[int], keys: Sequence[str], split_index: int) -> li
         frame += offset
         inputs_out.append((frame, key))
     inputs_out.sort()
-    return [f'{f} {k}' for f, k in inputs_out]
+    if inputs_out[0][0] < 0:
+        return None
+    else:
+        return [f'{f} {k}' for f, k in inputs_out]
 
 if __name__ == '__main__':
     if len(sys.argv) == 2:
@@ -98,14 +101,17 @@ if __name__ == '__main__':
                     random_offset = rng.randint(-10, 10)
                     new_offsets[random_index] += random_offset
                     new_offsets = tuple(new_offsets)
-                    if new_offsets[random_index] < 0 or new_offsets in visited:
+                    if new_offsets in visited:
                         continue
                     all_new_offsets.append(new_offsets)
                     visited.add(new_offsets)
                 
                 def evaluate(connection, new_offsets):
                     new_inputs = combine(new_offsets, keys, split_index)
-                    completed, duration = play_level(connection, level, new_inputs)
+                    if new_inputs is None:
+                        completed, duration = False, 0
+                    else:
+                        completed, duration = play_level(connection, level, new_inputs)
                     return completed, duration, new_offsets
                 
                 for completed, duration, new_offsets in executor.map(evaluate, all_new_offsets):
@@ -121,5 +127,6 @@ if __name__ == '__main__':
 
             if best_duration < base_duration:
                 best_inputs = combine(best_offsets, keys, split_index)
+                assert best_inputs is not None
                 with open(inputs_file.with_stem(f'{inputs_file.stem.split('_')[0]}_{best_duration / 60:05.2f}_optimized'), mode='w') as f:
                     f.write('\n'.join(best_inputs))
