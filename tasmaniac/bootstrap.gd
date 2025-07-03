@@ -97,7 +97,7 @@ func _initialize():
 		
 		for i in len(target_files):
 			var file: String = target_files[i]
-			var tmp_file := "user://_patch_%s.tmp" % i
+			var tmp_file := "user://_patch_%s_%s.tmp" % [hash, i]
 			
 			var data := FileAccess.get_file_as_bytes(file)
 			_assert(FileAccess.get_open_error() == OK, "Reading file " + file + " failed: " + error_string(FileAccess.get_open_error()))
@@ -125,7 +125,7 @@ func _initialize():
 		_assert(result == OK, "Writing " + patch_file + " failed: " + error_string(result))
 		
 		for i in len(target_files):
-			DirAccess.remove_absolute("user://_patch_%s.tmp" % i)
+			DirAccess.remove_absolute("user://_patch_%s_%s.tmp" % [hash, i])
 	
 	var result := ProjectSettings.load_resource_pack(patch_file)
 	_assert(result, "Loading " + patch_file + " failed")
