@@ -4,7 +4,6 @@ Tries to minimize the number of inputs in the file by deleting pairs of inputs a
 """
 
 import sys
-import time
 import random
 from pathlib import Path
 from tas_server import TASExecutor, play_level
@@ -45,14 +44,9 @@ def minimize_level(connection, level: int):
     with open(inputs_file, mode='r') as f:
         base_inputs = normalize(f.read().splitlines())
 
-    for _ in range(5):
-        base_completed, base_duration = play_level(connection, level, base_inputs)
-        if base_completed:
-            break
-        time.sleep(0.5)
-    else:
+    base_completed, base_duration = play_level(connection, level, base_inputs)
+    if not base_completed:
         raise AssertionError(f"Minimizing {inputs_file}: Base inputs in did not complete level")
-
     # print(f"Minimizing {inputs_file}: {len(base_inputs)} inputs")
 
     best_duration = base_duration
