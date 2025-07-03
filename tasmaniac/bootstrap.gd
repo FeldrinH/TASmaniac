@@ -66,6 +66,9 @@ func _initialize():
 		"res://scenes/bars/bars_container.gdc",
 	]
 	
+	# We only want to generate a new patch if one of the files we need to patch has changed.
+	# To check this we include a hash of all the files in the name of the generated patch pack.
+	
 	var hasher := HashingContext.new()
 	hasher.start(HashingContext.HASH_MD5)
 	for file in target_files:
@@ -82,6 +85,12 @@ func _initialize():
 		
 		result = packer.add_file("res://scenes/main/level_loader.gd.remap", "res://tasmaniac/level_loader.gd.remap")
 		_assert(result == OK, "Patching level_loader.gd.remap failed: " + error_string(result))
+		
+		# Ambidextro sometimes uses Engine.get_frames_per_second() to switch from running logic in render tick to physics tick.
+		# For determinism when running in slow motion we want to prevent this.
+		# To do this we patch all scripts that include such logic to call Engine.get_max_fps() instead of Engine.get_frames_per_second().
+		# The below strings are hex encodings of the "get_frames_per_second" and "get_max_fps" symbols as used in .gdc files.
+		# The patching logic was designed based on https://github.com/godotengine/godot/blob/master/modules/gdscript/gdscript_tokenizer_buffer.cpp.
 		
 		var replace_what := "15000000d1b6b6b6d3b6b6b6c2b6b6b6e9b6b6b6d0b6b6b6c4b6b6b6d7b6b6b6dbb6b6b6d3b6b6b6c5b6b6b6e9b6b6b6c6b6b6b6d3b6b6b6c4b6b6b6e9b6b6b6c5b6b6b6d3b6b6b6d5b6b6b6d9b6b6b6d8b6b6b6d2b6b6b6"
 		var replace_forwhat := "0b000000d1b6b6b6d3b6b6b6c2b6b6b6e9b6b6b6dbb6b6b6d7b6b6b6ceb6b6b6e9b6b6b6d0b6b6b6c6b6b6b6c5b6b6b6"
