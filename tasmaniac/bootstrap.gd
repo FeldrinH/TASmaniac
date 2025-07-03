@@ -53,16 +53,73 @@ func _initialize():
 		_websocket_server_script = load("res://tasmaniac/websocket_server.gd")
 		_assert(_websocket_server_script != null, "Failed to load tasmaniac/websocket_server.gd. Make sure that you have copied the entire tasmaniac folder to your install location.")
 	
-	var packer := PCKPacker.new()
-	var result = packer.pck_start("user://_patch.pck")
-	_assert(result == OK, "Opening _patch.pck for writing failed: " + error_string(result))
-	result = packer.add_file("res://scenes/main/level_loader.gd.remap", "res://tasmaniac/level_loader.gd.remap")
-	_assert(result == OK, "Patching level_loader.gd.remap failed: " + error_string(result))
-	result = packer.flush()
-	_assert(result == OK, "Writing _patch.pck failed: " + error_string(result))
+	var target_files := [
+		"res://scenes/trampoline/trampoline.gdc",
+		"res://scenes/smasher/smasher.gdc",
+		"res://scenes/projectile/projectile.gdc",
+		"res://scenes/moving_spikeball/moving_spikeball.gdc",
+		"res://scenes/moving_platform/moving_platform_v.gdc",
+		"res://scenes/moving_platform/moving_platform.gdc",
+		"res://scenes/mace/mace.gdc",
+		"res://scenes/lariat_fireball/lariat_fireball.gdc",
+		"res://scenes/directional_block/directional_block.gdc",
+		"res://scenes/bars/bars_container.gdc",
+	]
 	
-	result = ProjectSettings.load_resource_pack("user://_patch.pck")
-	_assert(result, "Loading _patch.pck failed")
+	var hasher := HashingContext.new()
+	hasher.start(HashingContext.HASH_MD5)
+	for file in target_files:
+		var data := FileAccess.get_file_as_bytes(file)
+		_assert(FileAccess.get_open_error() == OK, "Reading file " + file + " failed: " + error_string(FileAccess.get_open_error()))
+		hasher.update(data)
+	var hash := hasher.finish().hex_encode()
+	var patch_file := "user://_patch_%s.pck" % hash
+	
+	if !FileAccess.file_exists(patch_file):
+		var packer := PCKPacker.new()
+		var result := packer.pck_start(patch_file)
+		_assert(result == OK, "Opening " + patch_file + " for writing failed: " + error_string(result))
+		
+		result = packer.add_file("res://scenes/main/level_loader.gd.remap", "res://tasmaniac/level_loader.gd.remap")
+		_assert(result == OK, "Patching level_loader.gd.remap failed: " + error_string(result))
+		
+		var replace_what := "15000000d1b6b6b6d3b6b6b6c2b6b6b6e9b6b6b6d0b6b6b6c4b6b6b6d7b6b6b6dbb6b6b6d3b6b6b6c5b6b6b6e9b6b6b6c6b6b6b6d3b6b6b6c4b6b6b6e9b6b6b6c5b6b6b6d3b6b6b6d5b6b6b6d9b6b6b6d8b6b6b6d2b6b6b6"
+		var replace_forwhat := "0b000000d1b6b6b6d3b6b6b6c2b6b6b6e9b6b6b6dbb6b6b6d7b6b6b6ceb6b6b6e9b6b6b6d0b6b6b6c6b6b6b6c5b6b6b6"
+		
+		for i in len(target_files):
+			var file: String = target_files[i]
+			var tmp_file := "user://_patch_%s.tmp" % i
+			
+			var data := FileAccess.get_file_as_bytes(file)
+			_assert(FileAccess.get_open_error() == OK, "Reading file " + file + " failed: " + error_string(FileAccess.get_open_error()))
+			
+			var length := data.decode_u32(8)
+			var payload := data.slice(12)
+			if length != 0:
+				payload = payload.decompress(length, FileAccess.COMPRESSION_ZSTD)
+			_assert(len(payload) != 0, "Decompressing file " + file + " failed")
+			
+			var payload_out := payload.hex_encode().replace(replace_what, replace_forwhat).hex_decode()
+			
+			var file_out := FileAccess.open(tmp_file, FileAccess.WRITE)
+			_assert(FileAccess.get_open_error() == OK, "Opening " + tmp_file + " for writing failed")
+			file_out.store_buffer(data.slice(0, 8))
+			file_out.store_32(len(payload_out))
+			file_out.store_buffer(payload_out.compress(FileAccess.COMPRESSION_ZSTD))
+			file_out.close()
+			_assert(file_out.get_error() == OK, "Writing " + tmp_file + " failed")
+			
+			result = packer.add_file(file, tmp_file)
+			_assert(result == OK, "Patching " + file + " failed: " + error_string(result))
+		
+		result = packer.flush()
+		_assert(result == OK, "Writing " + patch_file + " failed: " + error_string(result))
+		
+		for i in len(target_files):
+			DirAccess.remove_absolute("user://_patch_%s.tmp" % i)
+	
+	var result := ProjectSettings.load_resource_pack(patch_file)
+	_assert(result, "Loading " + patch_file + " failed")
 	
 	root.child_entered_tree.connect(_on_scene_load)
 	change_scene_to_file(ProjectSettings.get_setting("application/run/main_scene"))
