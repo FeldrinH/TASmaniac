@@ -1,3 +1,4 @@
+import os
 import sys
 from typing import Sequence
 from pathlib import Path
@@ -56,8 +57,12 @@ if __name__ == '__main__':
     else:
         print("ERROR: Expected 1 or 2 arguments")
         sys.exit(1)
+    
+    MAX_WORKERS = int(os.getenv("TASMANIAC_MAX_WORKERS") or "10")
+    NUM_ITERATIONS = int(os.getenv("TASMANIAC_NUM_ITERATIONS") or "20")
+    ITERATION_NUM_CANDIDATES = int(os.getenv("TASMANIAC_ITERATION_NUM_CANDIDATES") or "80")
 
-    with TASExecutor(max_workers=10) as executor:
+    with TASExecutor(max_workers=MAX_WORKERS) as executor:
         for level in range(start, end):
             inputs_file = sorted(Path('recordings').glob(f'lvl{level:03d}_*.txt'))[0]
 
@@ -82,14 +87,14 @@ if __name__ == '__main__':
 
             rng = random.Random()
 
-            for _ in range(20):
+            for _ in range(NUM_ITERATIONS):
                 try:
                     _, offsets = queue.get_nowait()
                 except Empty:
                     break
                 
                 all_new_offsets = []
-                for _ in range(80):
+                for _ in range(ITERATION_NUM_CANDIDATES):
                     new_offsets = list(offsets)
                     random_index = rng.randrange(len(new_offsets))
                     random_offset = rng.randint(-10, 10)
