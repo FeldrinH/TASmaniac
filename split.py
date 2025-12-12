@@ -110,11 +110,11 @@ if __name__ == '__main__':
         func = wrap_func(do_split, input_file, output_file)
     elif args[0] == 'combine':
         watch = False
-        input_file = Path(sys.argv[1])
+        input_file = Path(args[1])
         output_file = input_file.with_stem(input_file.stem.removesuffix('_split') + '_combined')
         func = wrap_func(do_combine, input_file, output_file)
     else:
-        print(f"ERROR: Unknown command: {sys.argv[1]}")
+        print(f"ERROR: Unknown command: {args[0]}")
         sys.exit(1)
     
     if '--no-watch' in flags:
