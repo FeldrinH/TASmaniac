@@ -59,12 +59,12 @@ class TASExecutor:
 
         for _ in range(10):
             try:
-                connection = connect(f'ws://localhost:{port}')
+                connection = connect(f'ws://127.0.0.1:{port}')
                 break
             except ConnectionRefusedError:
                 time.sleep(0.25) # The server may take some time to start up, wait and try again
         else:
-            connection = connect(f'ws://localhost:{port}')
+            connection = connect(f'ws://127.0.0.1:{port}')
         self._connections.append(connection)
         
         _connection.set(connection)
@@ -91,7 +91,7 @@ class TASExecutor:
         return self._executor.map(lambda v: fn(_connection.get(), v), iterable)
 
 
-def connect(url = 'ws://localhost:7111') -> Connection:
+def connect(url = 'ws://127.0.0.1:7111') -> Connection:
     """
     Connect to TASmaniac WebSocket server. Use this with a `with` block to automatically clean up the connection.
     """

@@ -21,7 +21,7 @@ func _init(port: int, manager: Node):
 	manager.level_loader._level_complete.connect(func(): level_finished.emit(true))
 	manager.level_loader._level_unload.connect(func(): level_finished.emit(false))
 	
-	var error := tcp_server.listen(port)
+	var error := tcp_server.listen(port, "0.0.0.0")
 	_assert(error == OK, "Failed to start WebSocket server on port %s: %s" % [port, error_string(error)])
 	print("[TASmaniac] WebSocket server started on port %s" % port)
 
