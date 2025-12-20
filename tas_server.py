@@ -1,6 +1,7 @@
 import sys
 import json
 import subprocess
+import time
 from threading import Lock
 from concurrent.futures import Future, ThreadPoolExecutor
 from contextvars import ContextVar
@@ -49,13 +50,23 @@ class TASExecutor:
         with _lock:
             port = _next_port
             _next_port += 1
-            process = subprocess.Popen(
-                [_AMBIDEXTRO_EXECUTABLE, '--script', 'tasmaniac/bootstrap.gd', '--fixed-fps', '120', '--disable-vsync', '--headless', '--disable-render-loop', '--', f'--server={port}'],
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-            )
-            self._processes.append(process)
+            
+        process = subprocess.Popen(
+            [_AMBIDEXTRO_EXECUTABLE, '--script', 'tasmaniac/bootstrap.gd', '--fixed-fps', '120', '--disable-vsync', '--headless', '--disable-render-loop', '--', f'--server={port}'],
+            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        self._processes.append(process)
+
+        for _ in range(10):
+            try:
+                connection = connect(f'ws://localhost:{port}')
+                break
+            except ConnectionRefusedError:
+                time.sleep(0.25) # The server may take some time to start up, wait and try again
+        else:
             connection = connect(f'ws://localhost:{port}')
-            self._connections.append(connection)
+        self._connections.append(connection)
+        
         _connection.set(connection)
     
     def __enter__(self):
@@ -107,7 +118,7 @@ if __name__ == '__main__':
     # Usage example
 
     level = 22
-    inputs_file = 'recordings/lvl022_05.32.txt'
+    inputs_file = 'recordings/lvl022_05.28.txt'
 
     with open(inputs_file, mode='r') as f:
         inputs = f.read().splitlines()
