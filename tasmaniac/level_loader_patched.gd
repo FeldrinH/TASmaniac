@@ -29,3 +29,6 @@ func _manage_achievements():
 
 func manage_beat_game_achievements():
 	pass
+
+func _manage_keyboard_test():
+	pass
