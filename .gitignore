@@ -3,5 +3,7 @@ project.godot
 __pycache__/
 *.txt
 *.exe
+*.x86_64
 *.pck
 *.dll
+*.so
