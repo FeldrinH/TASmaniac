@@ -57,14 +57,16 @@ class TASExecutor:
         )
         self._processes.append(process)
 
-        for _ in range(10):
+        connect_start_time = time.perf_counter()
+        while True:
             try:
                 connection = connect(f'ws://127.0.0.1:{port}')
                 break
-            except ConnectionRefusedError:
-                time.sleep(0.25) # The server may take some time to start up, wait and try again
-        else:
-            connection = connect(f'ws://127.0.0.1:{port}')
+            except ConnectionRefusedError as err:
+                if time.perf_counter() - connect_start_time < 10:
+                    time.sleep(0.5) # The server may take some time to start up, wait and try again
+                else:
+                    raise err
         self._connections.append(connection)
         
         _connection.set(connection)
