@@ -1,6 +1,8 @@
 project.godot
 .godot/
 __pycache__/
+venv/
+.venv/
 *.txt
 *.exe
 *.x86_64
