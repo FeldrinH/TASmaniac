@@ -78,24 +78,22 @@ if __name__ == '__main__':
             print(f"Optimizing {inputs_file}: {base_duration} frames ({base_duration / 60:.2f} seconds), {len(base_offsets)} offsets")
 
             visited = set[tuple[int, ...]]()
-            queue = PriorityQueue[tuple[int, tuple[int, ...]]]()
             visited.add(base_offsets)
-            queue.put((base_duration, base_offsets))
+
+            last_duration = base_duration
+            last_offsets = base_offsets
 
             best_duration = base_duration
             best_offsets = base_offsets
 
             rng = random.Random()
 
-            for _ in range(NUM_ITERATIONS):
-                try:
-                    _, offsets = queue.get_nowait()
-                except Empty:
-                    break
-                
+            for i in range(NUM_ITERATIONS):
+                random_change_chance = (9 - i % 10) * 0.04
+
                 all_new_offsets = []
                 for _ in range(ITERATION_NUM_CANDIDATES):
-                    new_offsets = list(offsets)
+                    new_offsets = list(last_offsets)
                     random_index = rng.randrange(len(new_offsets))
                     random_offset = rng.randint(-10, 10)
                     new_offsets[random_index] += random_offset
@@ -119,9 +117,11 @@ if __name__ == '__main__':
                             best_duration = duration
                             best_offsets = new_offsets
                             print(f"New best: {duration} frames ({duration / 60:.2f} seconds)")
-                        queue.put((duration, new_offsets))
+                        if duration < last_duration or rng.random() < random_change_chance:
+                            last_duration = duration
+                            last_offsets = new_offsets
                 
-                print(f"Queue: {queue.qsize()} items, Visited: {len(visited)} items")
+                print(f"Visited: {len(visited)} items, Last duration: {last_duration} frames, {random_change_chance}")
             print()
 
             if best_duration < base_duration:
